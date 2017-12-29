@@ -50,7 +50,7 @@ module.exports = (router) => {
       return false;
     }
 
-    if (!(entity instanceof Array)) {
+    if (!_.isArray(entity)) {
       if (entity.hasOwnProperty(`role`) && template.roles.hasOwnProperty(entity.role)) {
         entity.role = template.roles[entity.role]._id.toString();
         return true;
@@ -230,14 +230,14 @@ module.exports = (router) => {
     role: {
       model: formio.resources.role.model,
       valid: (roles) => {
-        if (typeof roles === 'object' && !(roles instanceof Array)) {
+        if (_.isPlainObject(roles)) {
           return true;
         }
 
         return false;
       },
       transform: (template, role) => role,
-      query: function(document, template) {
+      query(document, template) {
         let query = {machineName: document.machineName, deleted: {$eq: null}};
         return hook.alter(`importRoleQuery`, query, document, template);
       }
@@ -245,7 +245,7 @@ module.exports = (router) => {
     resource: {
       model: formio.resources.form.model,
       valid: (resources) => {
-        if (typeof resources === 'object' && !(resources instanceof Array)) {
+        if (_.isPlainObject(resources)) {
           return true;
         }
 
@@ -285,7 +285,7 @@ module.exports = (router) => {
           );
         }, done);
       },
-      query: function(document, template) {
+      query(document, template) {
         let query = {machineName: document.machineName, deleted: {$eq: null}};
         return hook.alter(`importFormQuery`, query, document, template);
       }
@@ -293,7 +293,7 @@ module.exports = (router) => {
     form: {
       model: formio.resources.form.model,
       valid: (forms) => {
-        if (typeof forms === 'object' && !(forms instanceof Array)) {
+        if (_.isPlainObject(forms)) {
           return true;
         }
 
@@ -333,7 +333,7 @@ module.exports = (router) => {
           );
         }, done);
       },
-      query: function(document, template) {
+      query(document, template) {
         let query = {machineName: document.machineName, deleted: {$eq: null}};
         return hook.alter(`importFormQuery`, query, document, template);
       }
@@ -341,7 +341,7 @@ module.exports = (router) => {
     action: {
       model: formio.actions.model,
       valid: (actions) => {
-        if (typeof actions === 'object' && !(actions instanceof Array)) {
+        if (_.isPlainObject(actions)) {
           return true;
         }
 
@@ -358,7 +358,7 @@ module.exports = (router) => {
 
         return action;
       },
-      query: function(document, template) {
+      query(document, template) {
         let query = {machineName: document.machineName, deleted: {$eq: null}};
         return hook.alter(`importActionQuery`, query, document, template);
       }
@@ -531,7 +531,7 @@ module.exports = (router) => {
       let alters = hook.alter('templateAlters', {});
 
       let template = req.body.template;
-      if (typeof template === 'string') {
+      if (_.isString(template)) {
         template = JSON.parse(template);
       }
 

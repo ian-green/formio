@@ -62,7 +62,7 @@ module.exports = (worker, done) => {
   });
 
   let getScript = (data) => {
-    if (typeof data === 'string') {
+    if (_.isString(data)) {
       // Script to render a single string.
       return `
         environment.params = clone(context);
@@ -106,7 +106,7 @@ module.exports = (worker, done) => {
     environment,
     input: render,
     context,
-    output: (typeof render === 'string' ? '' : {})
+    output: _.isString(render) ? '' : {}
   };
 
   let script = new vm.Script(getScript(render));

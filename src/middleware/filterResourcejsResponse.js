@@ -14,7 +14,7 @@ var debug = require('debug')('formio:middleware:filterResourcejsResponse');
 module.exports = function(router) {
   return function(settings) {
     return function(req, res, next) {
-      if (!settings || settings === [] || !(settings instanceof Array)) {
+      if (!settings || settings === [] || !_.isArray(settings)) {
         return next();
       }
       if (!res || !res.resource || !res.resource.item) {
@@ -25,7 +25,7 @@ module.exports = function(router) {
       // Merge all results into an array, to handle the cases with multiple results.
       var multi = false;
       var list = [].concat(res.resource.item);
-      if (res.resource.item instanceof Array) {
+      if (_.isArray(res.resource.item)) {
         multi = true;
       }
 

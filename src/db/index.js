@@ -109,7 +109,7 @@ module.exports = function(formio) {
     }
 
     // Get a connection to mongo, using the config settings.
-    var dbUrl = (typeof config.mongo === 'string')
+    var dbUrl = _.isString(config.mongo)
       ? config.mongo
       : config.mongo[0];
 
@@ -424,8 +424,8 @@ module.exports = function(formio) {
   var pendingUpdates = function(code, database) {
     // Check the validity of the the code and database version numbers.
     if (
-      (!code || typeof code !== 'string' || !semver.valid(code))
-      || (!database || typeof database !== 'string' || !semver.valid(database))
+      (!code || !_.isString(code) || !semver.valid(code))
+      || (!database || !_.isString(database) || !semver.valid(database))
     ) {
       return unlock(function() {
         throw new Error('The provided versions given for comparison, do not match the semantic versioning format; ' +
@@ -440,7 +440,7 @@ module.exports = function(formio) {
     }
     else if (
       semver.gt(database, code) &&
-      (['patch', 'prepatch', 'prerelease', 'minor'].indexOf(semver.diff(database, code)) === -1)
+      (!['patch', 'prepatch', 'prerelease', 'minor'].includes(semver.diff(database, code)))
     ) {
       unlock(function() {
         throw new Error(
@@ -505,7 +505,7 @@ module.exports = function(formio) {
         // No private update was found, check the public location.
         debug.db('_update:');
         debug.db(_update);
-        if (typeof _update !== 'function') {
+        if (!_.isFunction(_update)) {
           try {
             _update = require(__dirname + '/updates/' + pending);
           }
@@ -517,7 +517,7 @@ module.exports = function(formio) {
 
         // Attempt to resolve the update.
         try {
-          if (typeof _update !== 'function') {
+          if (!_.isFunction(_update)) {
             return callback('Could not resolve the path for update: ' + pending);
           }
 

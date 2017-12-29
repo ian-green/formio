@@ -12,7 +12,7 @@ module.exports = function(router) {
       return [];
     }
 
-    if (!(input instanceof Array)) {
+    if (!_.isArray(input)) {
       input = [input];
     }
 
@@ -50,7 +50,7 @@ module.exports = function(router) {
           let value = req.body.data[key];
 
           // Coerce value into an array for plucking.
-          if (!(value instanceof Array)) {
+          if (!_.isArray(value)) {
             value = [value];
           }
 

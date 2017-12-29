@@ -20,7 +20,7 @@ module.exports = function(db, config, tools, done) {
   var makeUnique = function(form, cb) {
     var iter = 2;
     var comparison = form.path.toString() + iter.toString();
-    while (form.path.match(invalid) || projPaths[form.project.toString()].indexOf(comparison) !== -1) {
+    while (form.path.match(invalid) || projPaths[form.project.toString()].includes(comparison)) {
       comparison = form.path.toString() + (++iter).toString();
     }
 
@@ -40,7 +40,7 @@ module.exports = function(db, config, tools, done) {
       async.eachSeries(docs, function(form, cb) {
         projPaths[form.project.toString()] = projPaths[form.project.toString()] || [];
 
-        if (form.path.match(invalid) || projPaths[form.project.toString()].indexOf(form.path) !== -1) {
+        if (form.path.match(invalid) || projPaths[form.project.toString()].includes(form.path)) {
           makeUnique(form, cb);
         }
         else {

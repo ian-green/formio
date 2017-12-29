@@ -128,7 +128,7 @@ module.exports = (formio) => {
   let getParams = (res, form, submission) => new Promise((resolve, reject) => {
     let params = _.cloneDeep(submission);
     if (res && res.resource && res.resource.item) {
-      if (typeof res.resource.item.toObject === 'function') {
+      if (_.isFunction(res.resource.item.toObject)) {
         params = _.assign(params, res.resource.item.toObject());
       }
       else {
@@ -187,7 +187,7 @@ module.exports = (formio) => {
     let params = options.params;
 
     // Replace all newline chars with empty strings, to fix newline support in html emails.
-    if (mail.html && (typeof mail.html === 'string')) {
+    if (mail.html && _.isString(mail.html)) {
       mail.html = mail.html.replace(/\n/g, '');
     }
     debug.nunjucksInjector(mail);
@@ -368,7 +368,7 @@ module.exports = (formio) => {
 
               rest.postJson(settings.email.custom.url, mail, options)
               .on('complete', (result, response) => {
-                if (result instanceof Error) {
+                if (_.isError(result)) {
                   return cb(result);
                 }
 
@@ -393,14 +393,14 @@ module.exports = (formio) => {
       }
 
       // If we don't have a valid transport, don't waste time with nunjucks.
-      if (!transporter || typeof transporter.sendMail !== 'function') {
+      if (!transporter || !_.isFunction(transporter.sendMail)) {
         debug.error(`Could not determine which email transport to use for ${emailType}`);
         return next();
       }
 
       let mail = {
         from: message.from ? message.from : 'no-reply@form.io',
-        to: (typeof message.emails === 'string') ? message.emails : message.emails.join(', '),
+        to: _.isString(message.emails) ? message.emails : message.emails.join(', '),
         subject: message.subject,
         html: message.message
       };
@@ -431,7 +431,7 @@ module.exports = (formio) => {
         // Send each mail using the transporter.
         emails.forEach(email => {
           // Replace all newline chars with empty strings, to fix newline support in html emails.
-          if (email.html && (typeof email.html === 'string')) {
+          if (email.html && _.isString(email.html)) {
             email.html = email.html.replace(/\n/g, '');
           }
 

@@ -28,7 +28,7 @@ module.exports = function(router) {
           .omit('limit', 'skip', 'select', 'sort')
           .mapValues(function(value, name) {
             // Skip filters not looking at component data
-            if (name.indexOf('data.') !== 0) {
+            if (name.includes('data.')) {
               return value;
             }
 

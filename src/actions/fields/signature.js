@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 module.exports = function(formio) {
   return {
-    beforePost: function(component, path, validation, req, res, next) {
+    beforePost(component, path, validation, req, res, next) {
       if (!req.body.data) {
         return next();
       }
@@ -16,7 +16,7 @@ module.exports = function(formio) {
       }
       return next();
     },
-    beforePut: function(component, path, validation, req, res, next) {
+    beforePut(component, path, validation, req, res, next) {
       if (!req.body.data) {
         return next();
       }
@@ -32,7 +32,7 @@ module.exports = function(formio) {
       }
 
       if (
-        (typeof value !== 'string') ||
+        !_.isString(value) ||
         ((value !== '') && (value.substr(0, 5) !== 'data:'))
       ) {
         formio.cache.loadCurrentSubmission(req, function cacheResults(err, submission) {

@@ -11,22 +11,22 @@ module.exports = function(router) {
     var params = _.assign(util.getUrlParams(req.url), util.getUrlParams(req.baseUrl));
 
     // Get the formId from the request url.
-    var formId = params.hasOwnProperty('form') && params.form !== 'undefined'
+    var formId = params.hasOwnProperty('form') && !_.isUndefined(params.form)
       ? params.form
       : null;
 
     // Get the formId from the request url.
-    var subId = params.hasOwnProperty('submission') && params.form !== 'undefined'
+    var subId = params.hasOwnProperty('submission') && !_.isUndefined(params.form)
       ? params.submission
       : null;
 
     // Get the roleId from the request url.
-    var roleId = params.hasOwnProperty('role') && params.role !== 'undefined'
+    var roleId = params.hasOwnProperty('role') && _.isUndefined(params.role)
       ? params.role
       : null;
 
     // FA-993 - Update the request to check submission index in the case of submission exports.
-    if (subId === null && formId !== null && params.hasOwnProperty('export')) {
+    if (_.isNull(subId) && !_.isNull(formId) && params.hasOwnProperty('export')) {
       subId = '';
     }
 

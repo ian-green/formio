@@ -51,12 +51,12 @@ module.exports = function(db, config, tools, done) {
         var item = _.get(submission, 'data.' + path);
         if (item) {
           // Coerce all unique string fields to be lowercase.
-          if (typeof item === 'string') {
+          if (_.isString(item)) {
             debug.fixSubmissionUniques(submission._id.toString());
             update['data.' + path] = item.toString().toLowerCase();
           }
           // Coerce all unique string fields in an array to be lowercase.
-          else if (item instanceof Array && (item.length > 0) && (typeof item[0] === 'string')) {
+          else if (_.isArray(item) && (item.length > 0) && _.isString(item[0])) {
             _.map(item, function(element) {
               return element.toString().toLowerCase();
             });
@@ -111,7 +111,7 @@ module.exports = function(db, config, tools, done) {
           if (
             _.get(component, 'key')
             && _.get(component, 'unique') === true
-            && blackListedComponents.indexOf(_.get(component, 'type')) === -1
+            && !blackListedComponents.includes(_.get(component, 'type'))
           ) {
             debug.buildUniqueComponentList(form._id.toString() + ' -> ' + path);
             uniques[form._id.toString()] = uniques[form._id.toString()] || {};
@@ -229,7 +229,7 @@ module.exports = function(db, config, tools, done) {
           if (
             component.hasOwnProperty('unique')
             && component.unique === true
-            && blackListedComponents.indexOf(component.type) === -1
+            && !blackListedComponents.includes(component.type)
           ) {
             return true;
           }

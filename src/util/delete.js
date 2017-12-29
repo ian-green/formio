@@ -30,7 +30,7 @@ module.exports = function(router) {
       return next();
     }
     // Convert the forms to an array if only one was provided.
-    if (forms && !(forms instanceof Array)) {
+    if (forms && !_.isArray(forms)) {
       forms = [forms];
     }
 
@@ -86,7 +86,7 @@ module.exports = function(router) {
       return next();
     }
     // Convert the forms to an array if only one was provided.
-    if (forms && !(forms instanceof Array)) {
+    if (forms && !_.isArray(forms)) {
       forms = [forms];
     }
 
@@ -241,7 +241,7 @@ module.exports = function(router) {
               temp[b].roles = _.map((temp[b].roles || []), util.idToString);
 
               // Remove the given roleId if it was defined in the access.
-              if (temp[b].roles.indexOf(roleId) !== -1) {
+              if (temp[b].roles.includes(roleId)) {
                 _.pull(temp[b].roles, roleId);
               }
 
@@ -283,7 +283,7 @@ module.exports = function(router) {
           var temp = _.map((submission.toObject().roles || []), util.idToString);
 
           // Omit the given role from all submissions.
-          if (temp.indexOf(roleId) !== -1) {
+          if (temp.includes(roleId)) {
             _.pull(temp, roleId);
           }
 

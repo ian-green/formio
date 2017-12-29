@@ -27,17 +27,17 @@ module.exports = function(db, config, tools, done) {
     // Loop through all components
     utils.eachComponent(form.components, function(component) {
       // Ignore non-input or non-embedded components
-      if(!component.key || component.key.indexOf('.') === -1) {
+      if(!component.key || !component.key.includes('.')) {
         return;
       }
 
       // Find source of embedded component form first part of key
       var keyParts = component.key.split('.');
-      componentPromises.push(forms.findOne({name: keyParts[0], project: form.project}).then(function(resource) {
-        if(resource === null) {
+      componentPromises.push(forms.findOne({name: keyParts[0], project: form.project}).then((resource) => {
+        if (_.isNull(resource)) {
           // Embedded component had bad name, attempt to fix by camel casing name
-          return forms.findOne({name: _.camelCase(keyParts[0]), project: form.project}).then(function(resource) {
-            if(resource === null) {
+          return forms.findOne({name: _.camelCase(keyParts[0]), project: form.project}).then((resource) => {
+            if (_.isNull(resource)) {
               // Still can't find resource, give up b/c name is too broken to fix
               return;
             }

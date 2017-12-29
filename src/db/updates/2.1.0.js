@@ -1,6 +1,7 @@
 'use strict';
 
-var crypto = require('crypto');
+const crypto = require('crypto');
+const _ = require('lodash');
 
 /**
  * Encrypt some text
@@ -9,12 +10,12 @@ var crypto = require('crypto');
  * @returns {Buffer}
  */
 function encrypt(secret, mixed) {
-  if (mixed === undefined) {
+  if (_.isUndefined(mixed)) {
     return undefined;
   }
 
-  var cipher = crypto.createCipher('aes-256-cbc', secret);
-  var decryptedJSON = JSON.stringify(mixed);
+  const cipher = crypto.createCipher('aes-256-cbc', secret);
+  const decryptedJSON = JSON.stringify(mixed);
 
   return Buffer.concat([
     cipher.update(decryptedJSON),
@@ -30,12 +31,12 @@ function encrypt(secret, mixed) {
  * @returns {Object}
  */
 function decrypt(secret, cipherbuffer) {
-  if (cipherbuffer === undefined) {
+  if (_.isUndefined(cipherbuffer)) {
     return undefined;
   }
 
-  var decipher = crypto.createDecipher('aes-256-cbc', secret);
-  var decryptedJSON = Buffer.concat([
+  const decipher = crypto.createDecipher('aes-256-cbc', secret);
+  const decryptedJSON = Buffer.concat([
     decipher.update(cipherbuffer), // Buffer contains encrypted utf8
     decipher.final()
   ]);
@@ -51,11 +52,11 @@ function decrypt(secret, cipherbuffer) {
  * @param tools
  * @param done
  */
-module.exports = function(db, config, tools, done) {
+module.exports = (db, config, tools, done) => {
   // Add cors settings to existing projects.
-  var projects = db.collection('projects');
-  projects.find({}).snapshot({$snapshot: true}).forEach(function(project) {
-    var settings = {
+  const projects = db.collection('projects');
+  projects.find({}).snapshot({$snapshot: true}).forEach((project) => {
+    const settings = {
       cors: '*'
     }
     if (project.settings_encrypted) {

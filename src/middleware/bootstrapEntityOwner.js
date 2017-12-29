@@ -19,7 +19,7 @@ module.exports = function(router) {
       debug('selfOwner: ' + req.selfOwner);
 
       // Util to determine if we have a token to default access.
-      var tokenPresent = (_.has(req, 'token') && req.token !== null && _.has(req, 'token.user._id'));
+      var tokenPresent = (_.has(req, 'token') && !_.isNull(req.token) && _.has(req, 'token.user._id'));
 
       // See if this request has provided an owner.
       var hasOwner = _.has(req, 'body.owner');

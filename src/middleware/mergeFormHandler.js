@@ -84,7 +84,7 @@ module.exports = function(router) {
     var addChildKeysToList = function(component, list, children) {
       var container = children || getComponentsName(component);
       util.eachComponent(_.get(component, container), function(child) {
-        if (list.indexOf(child) === -1) {
+        if (!list.includes(child)) {
           list.push(child.key);
         }
       }, true);
@@ -257,7 +257,7 @@ module.exports = function(router) {
         debug('pathA: ', pathA);
 
         // Skip components which have been inserted already.
-        if (listKeys.indexOf(a.key) !== -1) {
+        if (listKeys.includes(a.key)) {
           return;
         }
 
@@ -277,7 +277,7 @@ module.exports = function(router) {
         util.eachComponent(formB, function(b, pathB) {
           debug('pathB: ', pathB);
 
-          if (skip || listKeys.indexOf(b.key) !== -1) {
+          if (skip || listKeys.includes(b.key)) {
             return;
           }
 
@@ -298,7 +298,7 @@ module.exports = function(router) {
 
       // Sweep formB one last time for any remaining components.
       util.eachComponent(formB, function(b) {
-        if (listKeys.indexOf(b.key) !== -1) {
+        if (listKeys.includes(b.key)) {
           return;
         }
 

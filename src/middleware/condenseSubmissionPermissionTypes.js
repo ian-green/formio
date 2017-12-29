@@ -29,7 +29,7 @@ module.exports = function(router) {
         _.has(permission, 'type')
         && _.includes(['read', 'write', 'admin'], permission.type)
         && _.has(permission, 'resources')
-        && (_.get(permission, 'resources') instanceof Array)
+        && _.isArray(_.get(permission, 'resources'))
       ) {
         // Ensure the permission type is defined.
         condensed[permission.type] = condensed[permission.type] || [];

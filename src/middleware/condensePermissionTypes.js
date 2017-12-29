@@ -29,7 +29,7 @@ module.exports = function(router) {
     if (
       req.body
       && req.body.hasOwnProperty('access')
-      && req.body.access instanceof Array
+      && _.isArray(req.body.access)
       && req.body.access.length > 0
     ) {
       final = [];
@@ -68,7 +68,7 @@ module.exports = function(router) {
     if (
       req.body
       && req.body.hasOwnProperty('submissionAccess')
-      && req.body.submissionAccess instanceof Array
+      && _.isArray(req.body.submissionAccess)
       && req.body.submissionAccess.length > 0
     ) {
       final = [];

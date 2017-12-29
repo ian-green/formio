@@ -27,7 +27,7 @@ var CSVExporter = function(form, req, res) {
   var ignore = ['password', 'button', 'container', 'datagrid'];
   try {
     util.eachComponent(form.components, function(component, path) {
-      if (!component.input || !component.key || ignore.indexOf(component.type) !== -1) {
+      if (!component.input || !component.key || ignore.includes(component.type)) {
         return;
       }
 
@@ -61,7 +61,7 @@ var CSVExporter = function(form, req, res) {
           items.push({label: [path, question.value].join('.'), path: question.value});
         });
       }
-      else if (['select', 'resource'].indexOf(component.type) !== -1) {
+      else if (['select', 'resource'].includes(component.type)) {
         // Prepare the Lodash template by deleting tags and html entities
         var clearTemplate = Entities.decode(component.template.replace(/<\/?[^>]+(>|$)/g, ''));
         var templateExtractor = _.template(clearTemplate, {
@@ -226,7 +226,7 @@ CSVExporter.prototype.stream = function(stream) {
       var componentData = _.get(submission.data, column.component);
 
       // If the path had no results and the component specifies a path, check for a datagrid component
-      if (componentData === undefined && column.component.indexOf('.') !== -1) {
+      if (_.isUndefined(componentData) && column.component.includes('.')) {
         var parts = column.component.split('.');
         var container = parts.shift();
         // If the subdata is an array, coerce it to a displayable string.

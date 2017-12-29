@@ -1,15 +1,15 @@
 'use strict';
 
-var _ = require('lodash');
-var async = require('async');
-var util = require('../util/util');
-var Validator = require('../resources/Validator');
-var Q = require('q');
+const _ = require('lodash');
+const async = require('async');
+const util = require('../util/util');
+const Validator = require('../resources/Validator');
+const Q = require('q');
 
-module.exports = function(router, resourceName, resourceId) {
-  var hook = require('../util/hook')(router.formio);
-  var fieldActions = require('../actions/fields/index')(router);
-  var handlers = {};
+module.exports = (router, resourceName, resourceId) => {
+  const hook = require('../util/hook')(router.formio);
+  const fieldActions = require('../actions/fields/index')(router);
+  const handlers = {};
 
   // Iterate through the possible handlers.
   _.each([
@@ -33,7 +33,7 @@ module.exports = function(router, resourceName, resourceId) {
       name: 'index',
       method: 'Index'
     }
-  ], function(method) {
+  ], (method) => {
     /**
      * Execute the field handler.
      *
@@ -48,12 +48,12 @@ module.exports = function(router, resourceName, resourceId) {
      * @param res
      * @param done
      */
-    var executeFieldHandler = function(component, path, validation, handlerName, req, res, done) {
+    const executeFieldHandler = (component, path, validation, handlerName, req, res, done) => {
       Q()
-        .then(function() {
+        .then(() => {
           // If this is a component reference.
           /* eslint-disable max-depth */
-          var hiddenFields = ['deleted', '__v', 'machineName'];
+          const hiddenFields = ['deleted', '__v', 'machineName'];
           if (component.reference) {
             if (
               (handlerName === 'afterGet') &&
@@ -74,7 +74,7 @@ module.exports = function(router, resourceName, resourceId) {
                     // Manually filter the protected fields.
                     router.formio.middleware.filterProtectedFields('create', (req) => {
                       return formId;
-                    })(req, {resource: {item: submission}}, function(err) {
+                    })(req, {resource: {item: submission}}, (err) => {
                       if (err) {
                         return reject(err);
                       }
@@ -109,7 +109,7 @@ module.exports = function(router, resourceName, resourceId) {
                   // Manually filter the protected fields.
                   router.formio.middleware.filterProtectedFields('index', (req) => {
                     return formId;
-                  })(req, {resource: {item: submissions}}, function(err) {
+                  })(req, {resource: {item: submissions}}, (err) => {
                     if (err) {
                       return reject(err);
                     }
@@ -166,7 +166,7 @@ module.exports = function(router, resourceName, resourceId) {
 
           return Q();
         })
-        .then(function() {
+        .then(() => {
           // Call the unique field action if applicable.
           if (
             fieldActions.hasOwnProperty('unique')
@@ -178,7 +178,7 @@ module.exports = function(router, resourceName, resourceId) {
 
           return Q();
         })
-        .then(function() {
+        .then(() => {
           // Check for the field action if available.
           if (
             fieldActions.hasOwnProperty(component.type) &&
@@ -190,12 +190,8 @@ module.exports = function(router, resourceName, resourceId) {
 
           return Q();
         })
-        .then(function() {
-          return done();
-        })
-        .catch(function(err) {
-          return done(err);
-        });
+        .then(() => done())
+        .catch(done);
     };
 
     /**
@@ -204,8 +200,8 @@ module.exports = function(router, resourceName, resourceId) {
      * @param req
      * @param done
      */
-    var loadCurrentForm = function(req, done) {
-      router.formio.cache.loadCurrentForm(req, function(err, form) {
+    const loadCurrentForm = (req, done) => {
+      router.formio.cache.loadCurrentForm(req, (err, form) => {
         if (err) {
           return done(err);
         }
@@ -216,7 +212,7 @@ module.exports = function(router, resourceName, resourceId) {
         req.currentForm = hook.alter('currentForm', form, req.body);
 
         // Load all subforms as well.
-        router.formio.cache.loadSubForms(req.currentForm, req, function() {
+        router.formio.cache.loadSubForms(req.currentForm, req, () => {
           req.flattenedComponents = util.flattenComponents(form.components);
           return done();
         });
@@ -229,8 +225,8 @@ module.exports = function(router, resourceName, resourceId) {
      * @param req
      * @param done
      */
-    var initializeSubmission = function(req, done) {
-      var isGet = (req.method === 'GET');
+    const initializeSubmission = (req, done) => {
+      const isGet = (req.method === 'GET');
 
       // If this is a get method, then filter the model query.
       if (isGet) {
@@ -249,7 +245,7 @@ module.exports = function(router, resourceName, resourceId) {
         req.skipResource = true;
 
         // Only allow the data to go through.
-        var properties = hook.alter('submissionParams', ['data', 'owner', 'access']);
+        const properties = hook.alter('submissionParams', ['data', 'owner', 'access']);
         req.body = _.pick(req.body, properties);
 
         // Ensure there is always data provided on POST.
@@ -279,7 +275,7 @@ module.exports = function(router, resourceName, resourceId) {
      * @param res
      * @param done
      */
-    var initializeActions = function(req, res, done) {
+    const initializeActions = (req, res, done) => {
       // If they wish to disable actions, then just skip.
       if (req.query.hasOwnProperty('dryrun') && req.query.dryrun) {
         return done();
@@ -295,7 +291,7 @@ module.exports = function(router, resourceName, resourceId) {
      * @param form
      * @param done
      */
-    var validateSubmission = function(req, res, done) {
+    const validateSubmission = (req, res, done) => {
       // No need to validate on GET requests.
       if (!((req.method === 'POST' || req.method === 'PUT') && req.body && !req.noValidate)) {
         return done();
@@ -310,7 +306,7 @@ module.exports = function(router, resourceName, resourceId) {
       // Clone the submission to the real value of the request body.
       req.submission = _.cloneDeep(req.body);
 
-      hook.alter('validateSubmissionForm', req.currentForm, req.body, function(form) {
+      hook.alter('validateSubmissionForm', req.currentForm, req.body, (form) => {
         // Get the submission model.
         const submissionModel = req.submissionModel || router.formio.resources.submission.model;
 
@@ -319,7 +315,7 @@ module.exports = function(router, resourceName, resourceId) {
         const validator = new Validator(req.currentForm, submissionModel, token);
 
         // Validate the request.
-        validator.validate(req.body, function(err, submission) {
+        validator.validate(req.body, (err, submission) => {
           if (err) {
             return res.status(400).json(err);
           }
@@ -338,23 +334,21 @@ module.exports = function(router, resourceName, resourceId) {
      * @param res
      * @param done
      */
-    var executeActions = function(handler) {
-      return function(req, res, done) {
-        // If they wish to disable actions, then just skip.
-        if (req.query.hasOwnProperty('dryrun') && req.query.dryrun) {
-          return done();
-        }
+    const executeActions = (handler) => (req, res, done) => {
+      // If they wish to disable actions, then just skip.
+      if (req.query.hasOwnProperty('dryrun') && req.query.dryrun) {
+        return done();
+      }
 
-        // If the body is undefined, then omit the body.
-        if (
-          (handler === 'before') &&
-          (req.body && req.body.hasOwnProperty('data') && typeof req.body.data === 'undefined')
-        ) {
-          req.body = _.omit(req.body, 'data');
-        }
+      // If the body is undefined, then omit the body.
+      if (
+        (handler === 'before') &&
+        (req.body && req.body.hasOwnProperty('data') && _.isUndefined(req.body.data))
+      ) {
+        req.body = _.omit(req.body, 'data');
+      }
 
-        router.formio.actions.execute(handler, method.name, req, res, done);
-      };
+      router.formio.actions.execute(handler, method.name, req, res, done);
     };
 
     /**
@@ -366,13 +360,13 @@ module.exports = function(router, resourceName, resourceId) {
      * @param res
      * @param done
      */
-    var executeFieldHandlers = function(validation, req, res, done) {
+    const executeFieldHandlers = (validation, req, res, done) => {
       // If they wish to disable actions, then just skip.
       if (req.query.hasOwnProperty('dryrun') && req.query.dryrun) {
         return done();
       }
 
-      async.eachOfSeries(req.flattenedComponents, function(component, path, cb) {
+      async.eachOfSeries(req.flattenedComponents, (component, path, cb) => {
         if (
           req.body &&
           component.hasOwnProperty('persistent') &&
@@ -392,20 +386,20 @@ module.exports = function(router, resourceName, resourceId) {
      * @param res
      * @param done
      */
-    var ensureResponse = function(req, res, done) {
+    const ensureResponse = (req, res, done) => {
       if (!res.resource && !res.headersSent) {
         res.status(200).json(res.submission || true);
       }
       done();
     };
 
-    var alterSubmission = function(req, res, done) {
+    const alterSubmission = (req, res, done) => {
       hook.alter('submission', req, res, done);
     };
 
     // Add before handlers.
-    var before = 'before' + method.method;
-    handlers[before] = function(req, res, next) {
+    const before = 'before' + method.method;
+    handlers[before] = (req, res, next) => {
       req.handlerName = before;
       async.series([
         async.apply(loadCurrentForm, req),
@@ -420,8 +414,8 @@ module.exports = function(router, resourceName, resourceId) {
     };
 
     // Add after handlers.
-    var after = 'after' + method.method;
-    handlers[after] = function(req, res, next) {
+    const after = 'after' + method.method;
+    handlers[after] = (req, res, next) => {
       req.handlerName = after;
       async.series([
         async.apply(executeActions('after'), req, res),

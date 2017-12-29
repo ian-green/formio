@@ -131,18 +131,18 @@ module.exports = function(db, config, tools, done) {
 
   var processActions = function(filteredActions, cb) {
     async.forEachOfSeries(filteredActions, function(formActions, formId, callback) {
-      if (!(formActions instanceof Array)) {
-        return callback('Expected Array, got: ' + JSON.stringify(formActions))
+      if (!_.isArray(formActions)) {
+        return callback(`Expected Array, got: ${JSON.stringify(formActions)}`)
       }
       if (formActions.length > 2) {
-        return callback('The form ' + formId.toString() + ', has duplicate actions.. ' + JSON.stringify(formActions));
+        return callback(`The form ${formId.toString()}, has duplicate actions.. ${JSON.stringify(formActions)}`);
       }
 
       if (formActions.length === 2) {
         var association = null;
         formActions.forEach(function(action) {
           if (!action.settings || !action.settings.hasOwnProperty('association')) {
-            return callback('Expected the action to have association settings... ' + JSON.stringify(action));
+            return callback(`Expected the action to have association settings... ${JSON.stringify(action)}`);
           }
 
           if (association === null) {
@@ -157,7 +157,7 @@ module.exports = function(db, config, tools, done) {
 
         // There are 2 form actions that need to be condensed.
         if (association === 'new') {
-          console.log('Condensing: actions for form: ' + formId);
+          console.log(`Condensing: actions for form: ${formId}`);
           condenseActions(formActions, formId, function(err) {
             if (err) {
               return callback(err);
@@ -225,11 +225,11 @@ module.exports = function(db, config, tools, done) {
           getAuthenticatedRole(action.form.toString(), next)
         },
         function(roles, next) {
-          if (!roles || ((roles instanceof Array) && roles.length === 0)) {
-            return next('No roles were found for the project containing the form: ' + action.form.toString() + ', ' + JSON.stringify(roles));
+          if (!roles || _.isArray(roles) && roles.length === 0) {
+            return next(`No roles were found for the project containing the form: ${action.form.toString()}, ${JSON.stringify(roles)}`);
           }
-          if ((roles instanceof Array) && roles.length !== 1) {
-            return next('More than one role was returned for the project... Expected 1: ' + JSON.stringify(roles))
+          if (_.isArray(roles) && roles.length !== 1) {
+            return next(`More than one role was returned for the project... Expected 1: ${JSON.stringify(roles)}`);
           }
 
           addRoleToAuthAction(action._id.toString(), roles[0]._id.toString(), next);

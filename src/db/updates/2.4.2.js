@@ -245,7 +245,7 @@ module.exports = function(db, config, tools, done) {
       item = item.replace(removeRegex, '');
       var valid = item.match(validRegex);
 
-      while (!item || !valid || item.match(invalidRegex) || (uniques.indexOf(item) !== -1)) {
+      while (!item || !valid || item.match(invalidRegex) || uniques.includes(item)) {
         item = newKey();
         valid = item.match(validRegex);
       }
@@ -270,7 +270,7 @@ module.exports = function(db, config, tools, done) {
       }).values();
 
       // Potential errors, because the empty key was included (potential duplicates).
-      if (keys.indexOf('') !== -1 || !_.isEqual(keys, _.unique(keys))) {
+      if (keys.includes('') || !_.isEqual(keys, _.unique(keys))) {
         form.components = cleanLayoutKeys(form.components, form._id);
 
         // Update the key list after cleaning erroneous form component layout keys.

@@ -11,11 +11,11 @@ module.exports = function(router) {
   var formio = hook.alter('formio', router.formio);
 
   return function formHandler(req, res, next) {
-    if (['POST', 'PUT'].indexOf(req.method) !== -1 && req.body.path) {
+    if (['POST', 'PUT'].includes(req.method) && req.body.path) {
       var fragments = req.body.path.split('/');
       if (
-        formio.config.reservedForms.indexOf(req.body.path) !== -1 // Check the full path
-        || formio.config.reservedForms.indexOf(fragments[0]) !== -1 // check the first path fragment if available
+        formio.config.reservedForms.includes(req.body.path) // Check the full path
+        || formio.config.reservedForms.includes(fragments[0]) // check the first path fragment if available
       ) {
         var message = 'Form path cannot contain one of the following names: ';
         return res.status(400).send(message + formio.config.reservedForms.join(', '));

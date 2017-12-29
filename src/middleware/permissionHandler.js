@@ -118,7 +118,7 @@ module.exports = function(router) {
    *   The compiled access list.
    */
   var getSelfAccessPermissions = function(req, form, access) {
-    if (!form || !access || !form.submissionAccess || !(form.submissionAccess instanceof Array)) {
+    if (!form || !access || !form.submissionAccess || !_.isArray(form.submissionAccess)) {
       return;
     }
 
@@ -159,7 +159,7 @@ module.exports = function(router) {
      * @return
      *   The access object for the given form/sub id.
      */
-    getAccess: function(req, res, done) {
+    getAccess(req, res, done) {
       var access = {};
       async.series(hook.alter('getAccess', [
         // Get the permissions for a Form and Submissions with the given ObjectId.
@@ -396,7 +396,7 @@ module.exports = function(router) {
      *   If the user has access to this method, with their given roles.
      */
     /* eslint-disable max-statements */
-    hasAccess: function(req, access, entity, res) {
+    hasAccess(req, access, entity, res) {
       var method = req.method.toUpperCase();
 
       // Determine the roles and user based on the available token.
@@ -427,7 +427,7 @@ module.exports = function(router) {
       req.ownerAssign = false;
 
       // Check to see if this user has an admin role.
-      var hasAdminRole = access.adminRole ? (_.indexOf(roles, access.adminRole) !== -1) : false;
+      var hasAdminRole = access.adminRole ? (_.includes(roles, access.adminRole)) : false;
       if (hasAdminRole || hook.alter('isAdmin', req.isAdmin, req)) {
         req.isAdmin = true;
         debug.permissions('Admin: true');
@@ -477,7 +477,7 @@ module.exports = function(router) {
       // Using the given method, iterate the 8 available entity access. Compare the given roles with the roles
       // defined by the entity to have access. If this roleId is found within the defined roles, grant access.
       var search = methods[method];
-      if (!search || typeof search === 'undefined') {
+      if (!search || _.isUndefined(search)) {
         router.formio.util.error({
           method: req.method,
           _method: method
@@ -485,7 +485,7 @@ module.exports = function(router) {
       }
 
       // Unsupported request method.
-      if (search === undefined) {
+      if (_.isUndefined(search)) {
         if (res) {
           res.sendStatus(404);
         }
@@ -502,14 +502,14 @@ module.exports = function(router) {
             &&
             (
               (access[entity.type][type] === true) ||
-              (access[entity.type][type] instanceof Array && access[entity.type][type].indexOf(role) !== -1)
+              (_.isArray(access[entity.type][type]) && access[entity.type][type].includes(role))
             )
           ) {
             // Allow anonymous users to create a submission for themselves if defined.
             if (type === 'create_own') {
               _hasAccess = true;
             }
-            else if (type.toString().indexOf('_own') !== -1) {
+            else if (type.toString().includes('_own')) {
               // Entity has an owner, Request is from a User, and the User is the Owner.
               // OR, selfAccess was flagged, and the user is the entity.
               /* eslint-disable max-len */
@@ -535,7 +535,7 @@ module.exports = function(router) {
               // (~A | B) logic for submission access, to not affect old permissions.
               if (
                 (type === 'create_all' || type === 'update_all')
-                && submissionResourceAdmin.indexOf(util.idToString(role)) === -1
+                && !submissionResourceAdmin.includes(util.idToString(role))
               ) {
                 // Only allow the the bootstrapEntityOwner middleware to assign an owner if defined in the payload.
                 if (_.has(req, 'body.owner')) {
@@ -622,21 +622,21 @@ module.exports = function(router) {
 
       // Check for permissions starting at micro -> macro level.
       var entity = null;
-      if (req.hasOwnProperty('subId') && ((req.subId !== null) && (req.subId !== undefined))) {
+      if (req.hasOwnProperty('subId') && !_.isNil(req.subId)) {
         debug.permissions('Checking access for the Submission.');
         entity = {
           type: 'submission',
           id: req.subId
         };
       }
-      else if (req.hasOwnProperty('formId') && ((req.formId !== null) && (req.formId !== undefined))) {
+      else if (req.hasOwnProperty('formId') && !_.isNil(req.formId)) {
         debug.permissions('Checking access for the Form.');
         entity = {
           type: 'form',
           id: req.formId
         };
       }
-      else if (req.hasOwnProperty('roleId') && ((req.roleId !== null) && (req.roleId !== undefined))) {
+      else if (req.hasOwnProperty('roleId') && !_.isNil(req.roleId)) {
         debug.permissions('Checking access for the Role.');
         entity = {
           type: 'role',

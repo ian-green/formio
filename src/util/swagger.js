@@ -305,7 +305,7 @@ module.exports = function(req, router, cb) {
     host: hook.alter('host', router.formio.config.baseUrl, req)
   };
 
-  if (typeof req.formId !== 'undefined' && req.formId !== null) {
+  if (!_.isNil(req.formId)) {
     router.formio.cache.loadCurrentForm(req, function(err, form) {
       if (err) {
         throw err;

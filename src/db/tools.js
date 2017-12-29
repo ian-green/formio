@@ -1,9 +1,10 @@
 'use strict';
 
-var crypto = require('crypto');
-var util = require('../util/util');
+const crypto = require('crypto');
+const util = require('../util/util');
+const _ = require('lodash');
 
-module.exports = function(db, schema) {
+module.exports = (db, schema) => {
   return {
     /**
      * Include the formio utils.
@@ -16,7 +17,7 @@ module.exports = function(db, schema) {
      * @param version
      * @returns {Function}
      */
-    updateLockVersion: function(version, callback) {
+    updateLockVersion(version, callback) {
       schema.findOneAndUpdate(
         {key: 'formio'},
         {$set: {version: version}},
@@ -25,7 +26,7 @@ module.exports = function(db, schema) {
             throw err;
           }
 
-          util.log(' > Upgrading MongoDB Schema lock to v' + version);
+          util.log(` > Upgrading MongoDB Schema lock to v${version}`);
           callback();
         }
       );
@@ -36,8 +37,8 @@ module.exports = function(db, schema) {
      * @param   {Object} mixed
      * @returns {Buffer}
      */
-    encrypt: function(secret, mixed) {
-      if (mixed === undefined) {
+    encrypt(secret, mixed) {
+      if (_.isUndefined(mixed)) {
         return undefined;
       }
 
@@ -49,8 +50,8 @@ module.exports = function(db, schema) {
         cipher.final()
       ]);
     },
-    decrypt: function(secret, cipherbuffer) {
-      if (cipherbuffer === undefined) {
+    decrypt(secret, cipherbuffer) {
+      if (_.isUndefined(cipherbuffer)) {
         return undefined;
       }
 

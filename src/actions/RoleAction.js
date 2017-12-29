@@ -214,7 +214,7 @@ module.exports = function(router) {
     var updateModel = function(submission, association) {
       // Try to update the submission directly.
       debug.updateModel(association);
-      if (typeof submission.save === 'function') {
+      if (_.isFunction(submission.save)) {
         submission.save(function(err) {
           if (err) {
             debug.updateModel(err);
@@ -246,7 +246,7 @@ module.exports = function(router) {
         }
       });
 
-      if (compare.indexOf(role) !== -1) {
+      if (compare.includes(role)) {
         debug.addRole('The given role to add was found in the current list of roles already.');
         return next();
       }
@@ -282,7 +282,7 @@ module.exports = function(router) {
         }
       });
 
-      if (compare.indexOf(role) === -1) {
+      if (compare.includes(role)) {
         debug.removeRole('The given role to remove was not found.');
         return next();
       }
@@ -327,14 +327,14 @@ module.exports = function(router) {
     /**
      * Prepare to load existing resource
      */
-    if (typeof resource === 'object' && resource.hasOwnProperty('_id')) {
+    if (_.isObject(resource) && resource.hasOwnProperty('_id')) {
       resource = resource._id;
     }
 
     /**
      * Resolve the action.
      */
-    if (typeof resource === 'string') {
+    if (_.isString(resource)) {
       loadUser(resource, function(user) {
         resource = user;
         roleManipulation(this.settings.type, this.settings.association);
