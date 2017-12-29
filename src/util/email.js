@@ -146,7 +146,7 @@ module.exports = (formio) => {
     util.eachComponent(form.components, (component) => {
       params.components[component.key] = component;
       if (component.type === 'resource' && params.data[component.key]) {
-        params.data[component.key + 'Obj'] = params.data[component.key];
+        params.data[`${component.key  }Obj`] = params.data[component.key];
 
         const thread = new Thread(Thread.Tasks.nunjucks).start({
           template: component.template,

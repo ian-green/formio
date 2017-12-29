@@ -18,13 +18,13 @@ module.exports = function(router) {
         admin: 1,
         default: 1
       })
-      .exec(function(err, roleResult) {
+      .exec((err, roleResult) => {
         if (err || !roleResult) {
           return res.status(400).send('Could not load the Roles.');
         }
 
         const roles = {};
-        _.each(roleResult, function(role) {
+        _.each(roleResult, (role) => {
           if (role.title) {
             roles[role.title.replace(/\s/g, '').toLowerCase()] = role.toObject();
           }
@@ -39,13 +39,13 @@ module.exports = function(router) {
             access: 1,
             submissionAccess: 1
           })
-          .exec(function(err, formResult) {
+          .exec((err, formResult) => {
             if (err || !formResult) {
               return res.status(400).send('Could not load the Forms.');
             }
 
             const forms = {};
-            _.each(formResult, function(form) {
+            _.each(formResult, (form) => {
               forms[form.name] = form.toObject();
             });
 
@@ -53,7 +53,7 @@ module.exports = function(router) {
             hook.alter('accessInfo', {
               roles: roles,
               forms: forms
-            }, function(err, accessInfo) {
+            }, (err, accessInfo) => {
               if (err) {
                 return res.status(400).send(err.toString());
               }

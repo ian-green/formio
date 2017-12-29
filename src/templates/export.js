@@ -16,8 +16,8 @@ module.exports = (router) => {
 
   // Assign the role ids.
   const assignRoles = function(_map, perms) {
-    _.each(perms, function(access) {
-      _.each(access.roles, function(roleId, i) {
+    _.each(perms, (access) => {
+      _.each(access.roles, (roleId, i) => {
         roleId = roleId.toString();
         if (_map.roles && _map.roles.hasOwnProperty(roleId)) {
           access.roles[i] = _map.roles[roleId];
@@ -41,7 +41,7 @@ module.exports = (router) => {
     if (!entity || !entity.resources) {
       return;
     }
-    _.each(entity.resources, function(resource, index) {
+    _.each(entity.resources, (resource, index) => {
       if (_map.forms && _map.forms.hasOwnProperty(resource)) {
         entity.resources[index] = _map.forms[resource];
       }
@@ -77,11 +77,11 @@ module.exports = (router) => {
         deleted: {$eq: null}
       })
       .lean(true)
-      .exec(function(err, actions) {
+      .exec((err, actions) => {
         if (err) {
           return next(err);
         }
-        _.each(actions, function(action, index) {
+        _.each(actions, (action, index) => {
           assignForm(_map, action);
           assignRole(_map, action.settings);
           assignResource(_map, action.settings);
@@ -107,15 +107,15 @@ module.exports = (router) => {
     formio.resources.form.model
       .find(hook.alter('formQuery', {deleted: {$eq: null}}, options))
       .lean(true)
-      .exec(function(err, forms) {
+      .exec((err, forms) => {
         if (err) {
           return next(err);
         }
-        _.each(forms, function(form) {
+        _.each(forms, (form) => {
           assignRoles(_map, form.access);
           assignRoles(_map, form.submissionAccess);
           const machineName = form.machineName = hook.alter('machineNameExport', form.machineName);
-          _export[form.type + 's'][machineName] = _.pick(form,
+          _export[`${form.type  }s`][machineName] = _.pick(form,
             'title',
             'type',
             'name',
@@ -132,8 +132,8 @@ module.exports = (router) => {
         });
 
         // Now assign the resource components.
-        _.each(forms, function(form) {
-          util.eachComponent(form.components, function(component) {
+        _.each(forms, (form) => {
+          util.eachComponent(form.components, (component) => {
             assignForm(_map, component);
             assignForm(_map, component.data);
             assignResource(_map, component);
@@ -158,11 +158,11 @@ module.exports = (router) => {
     formio.resources.role.model
       .find(hook.alter('roleQuery', {deleted: {$eq: null}}, options))
       .lean(true)
-      .exec(function(err, roles) {
+      .exec((err, roles) => {
         if (err) {
           return next(err);
         }
-        _.each(roles, function(role) {
+        _.each(roles, (role) => {
           const machineName = role.machineName = hook.alter('machineNameExport', role.machineName);
           _export.roles[machineName] = _.pick(role,
             'title',

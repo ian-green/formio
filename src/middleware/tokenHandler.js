@@ -59,9 +59,9 @@ module.exports = function(router) {
     }
 
     // Decode/refresh the token and store for later middleware.
-    jwt.verify(token, router.formio.config.jwt.secret, function(err, decoded) {
+    jwt.verify(token, router.formio.config.jwt.secret, (err, decoded) => {
       if (err || !decoded) {
-        debug.handler(err || 'Token could not decoded: ' + token);
+        debug.handler(err || `Token could not decoded: ${  token}`);
 
         // If the token has expired, send a 440 error (Login Timeout)
         if (err && (err.name === 'JsonWebTokenError')) {
@@ -120,7 +120,7 @@ module.exports = function(router) {
 
       // Load the user submission.
       const cache = router.formio.cache || require('../cache/cache')(router);
-      cache.loadSubmission(req, decoded.form._id, decoded.user._id, function(err, user) {
+      cache.loadSubmission(req, decoded.form._id, decoded.user._id, (err, user) => {
         if (err) {
           // Couldn't load the use, try to fail safely.
           user = decoded.user;
@@ -143,7 +143,7 @@ module.exports = function(router) {
 
         // Allow anyone to alter the user.
         debug.handler(user);
-        hook.alter('user', user, function(err, user) {
+        hook.alter('user', user, (err, user) => {
           if (err) {
             return next();
           }

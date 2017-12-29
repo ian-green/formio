@@ -46,7 +46,7 @@ module.exports = function(router) {
   RoleAction.settingsForm = function(req, res, next) {
     router.formio.resources.role.model.find(hook.alter('roleQuery', {deleted: {$eq: null}}, req))
       .sort({title: 1})
-      .exec(function(err, roles) {
+      .exec((err, roles) => {
         if (err || !roles) {
           return res.status(400).send('Could not load the Roles.');
         }
@@ -179,7 +179,7 @@ module.exports = function(router) {
     const loadUser = function(submission, callback) {
       debug.loadUser(submission);
       const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-      submissionModel.findById(submission, function(err, user) {
+      submissionModel.findById(submission, (err, user) => {
         if (err) {
           return res.status(400).send(err.message || err);
         }
@@ -215,7 +215,7 @@ module.exports = function(router) {
       // Try to update the submission directly.
       debug.updateModel(association);
       if (_.isFunction(submission.save)) {
-        submission.save(function(err) {
+        submission.save((err) => {
           if (err) {
             debug.updateModel(err);
             return next(err);
@@ -236,11 +236,11 @@ module.exports = function(router) {
      * @returns {*}
      */
     const addRole = function(role, submission, association) {
-      debug.addRole('Role: ' + role);
+      debug.addRole(`Role: ${  role}`);
 
       // The given role already exists in the resource.
       let compare = [];
-      _.each(_.get(submission, 'roles'), function(element) {
+      _.each(_.get(submission, 'roles'), (element) => {
         if (element) {
           compare.push(util.idToString(element));
         }
@@ -272,11 +272,11 @@ module.exports = function(router) {
      * @returns {*}
      */
     const removeRole = function(role, submission, association) {
-      debug.removeRole('Role: ' + role);
+      debug.removeRole(`Role: ${  role}`);
 
       // The given role does not exist in the resource.
       let compare = [];
-      submission.roles.forEach(function(element) {
+      submission.roles.forEach((element) => {
         if (element) {
           compare.push(util.idToString(element));
         }
@@ -304,11 +304,11 @@ module.exports = function(router) {
      *   The type of role manipulation.
      */
     const roleManipulation = function(type, association) {
-      debug.roleManipulation('Type: ' + type);
+      debug.roleManipulation(`Type: ${  type}`);
 
       // Confirm that the given/configured role is actually accessible.
       const query = hook.alter('roleQuery', {_id: role, deleted: {$eq: null}}, req);
-      router.formio.resources.role.model.findOne(query, function(err, role) {
+      router.formio.resources.role.model.findOne(query, (err, role) => {
         if (err || !role) {
           return res.status(400).send('The given role was not found.');
         }
@@ -335,10 +335,10 @@ module.exports = function(router) {
      * Resolve the action.
      */
     if (_.isString(resource)) {
-      loadUser(resource, function(user) {
+      loadUser(resource, (user) => {
         resource = user;
         roleManipulation(this.settings.type, this.settings.association);
-      }.bind(this));
+      });
     }
     else {
       roleManipulation(this.settings.type, this.settings.association);

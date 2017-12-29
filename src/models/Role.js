@@ -33,7 +33,7 @@ module.exports = function(router) {
             }
 
             // Search for roles that exist, with the given parameters.
-            mongoose.model('role').findOne(search, function(err, result) {
+            mongoose.model('role').findOne(search, (err, result) => {
               if (err || result) {
                 return done(false);
               }

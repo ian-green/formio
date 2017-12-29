@@ -22,7 +22,7 @@ module.exports = function(router) {
           return;
         }
 
-        util.eachComponent(form.components, function(component) {
+        util.eachComponent(form.components, (component) => {
           if (component.validate && component.validate.customPrivate) {
             delete component.validate.custom;
           }
@@ -31,7 +31,7 @@ module.exports = function(router) {
 
       // Check both array of forms and objects.
       if (_.isArray(res.resource.item)) {
-        _.each(res.resource.item, function(item) {
+        _.each(res.resource.item, (item) => {
           checkPrivateValidation(item);
         });
       }

@@ -2,12 +2,12 @@
 
 const bcrypt = require('bcrypt');
 module.exports = function(text, next) {
-    bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.genSalt(10, (err, salt) => {
         if (err) {
             return next(err);
         }
 
-        bcrypt.hash(text, salt, function(error, hash) {
+        bcrypt.hash(text, salt, (error, hash) => {
             if (error) {
                 return next(error);
             }

@@ -11,6 +11,8 @@
     "strict": [2, "global"],
     "max-statements": [2, 35],
     "quotes": [0],
-    "prefer-const": "error"
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-template": "error"
   }
 }

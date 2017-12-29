@@ -73,14 +73,14 @@ module.exports = function(router) {
         deleted: {$eq: null}
       })
       .sort('-priority')
-      .exec(function(err, result) {
+      .exec((err, result) => {
         if (err) {
           return next(err);
         }
 
         // Iterate through all of the actions and load them.
         const actions = [];
-        _.each(result, function(action) {
+        _.each(result, (action) => {
           if (!this.actions.hasOwnProperty(action.name)) {
             return;
           }
@@ -88,11 +88,11 @@ module.exports = function(router) {
           // Create the action class.
           const ActionClass = this.actions[action.name];
           actions.push(new ActionClass(action, req, res));
-        }.bind(this));
+        });
 
         req.actions[form] = actions;
         return next(null, actions);
-      }.bind(this));
+      });
     },
 
     /**
@@ -111,7 +111,7 @@ module.exports = function(router) {
       // Make sure we have actions attached to the request.
       if (req.actions) {
         const actions = [];
-        _.each(req.actions[req.formId], function(action) {
+        _.each(req.actions[req.formId], (action) => {
           if (
             (!handler || action.handler.includes(handler)) &&
             (!method || action.method.includes(method))
@@ -123,12 +123,12 @@ module.exports = function(router) {
       }
       else {
         // Load the actions.
-        this.loadActions(req, res, function(err) {
+        this.loadActions(req, res, (err) => {
           if (err) {
             return next(err);
           }
           this.search(handler, method, req, res, next);
-        }.bind(this));
+        });
       }
     },
 
@@ -140,21 +140,21 @@ module.exports = function(router) {
      * @param next
      */
     initialize(method, req, res, next) {
-      this.search(null, method, req, res, function(err, actions) {
+      this.search(null, method, req, res, (err, actions) => {
         if (err) {
           return next(err);
         }
 
         // Iterate through each action.
-        async.forEachOf(actions, function(action, index, done) {
+        async.forEachOf(actions, (action, index, done) => {
           if (actions[index].initialize) {
             actions[index].initialize(method, req, res, done);
           }
           else {
             done();
           }
-        }.bind(this), next);
-      }.bind(this));
+        }, next);
+      });
     },
 
     /**
@@ -168,13 +168,13 @@ module.exports = function(router) {
      */
     execute(handler, method, req, res, next) {
       // Find the available actions.
-      this.search(handler, method, req, res, function(err, actions) {
+      this.search(handler, method, req, res, (err, actions) => {
         if (err) {
           return next(err);
         }
 
         // Iterate and execute each action.
-        async.eachSeries(actions, function(action, cb) {
+        async.eachSeries(actions, (action, cb) => {
           let execute = true;
 
           try {
@@ -194,7 +194,7 @@ module.exports = function(router) {
             // See if a condition is not established within the action.
             const field = _.get(action, 'condition.field');
             const eq = _.get(action, 'condition.eq');
-            const value = _.get(req, 'body.data.' + field);
+            const value = _.get(req, `body.data.${  field}`);
             const compare = _.get(action, 'condition.value');
             debug.action(
               '\nfield', field,
@@ -218,14 +218,14 @@ module.exports = function(router) {
             execute = false;
           }
 
-          debug.action('execute (' + execute + '):', action);
+          debug.action(`execute (${  execute  }):`, action);
           if (!execute) {
             return cb();
           }
 
           // Resolve the action.
           action.resolve(handler, method, req, res, cb);
-        }, function(err) {
+        }, (err) => {
           if (err) {
             return next(err);
           }
@@ -324,13 +324,13 @@ module.exports = function(router) {
       });
     }
 
-    router.formio.cache.loadForm(req, undefined, req.params.formId, function(err, form) {
+    router.formio.cache.loadForm(req, undefined, req.params.formId, (err, form) => {
       if (err || !form || !form.components) {
         return cb('Could not load form components for conditional actions.');
       }
 
       const filteredComponents = _(router.formio.util.flattenComponents(form.components))
-      .filter(function(component) {
+      .filter((component) => {
         return component.key && component.input === true;
       })
       .value();
@@ -505,7 +505,7 @@ module.exports = function(router) {
   };
 
   // Return a list of available actions.
-  router.get('/form/:formId/actions', function(req, res, next) {
+  router.get('/form/:formId/actions', (req, res, next) => {
     const result = [];
 
     // Add an action to the results array.
@@ -522,8 +522,8 @@ module.exports = function(router) {
     };
 
     // Iterate through each of the available actions.
-    async.eachSeries(_.values(ActionIndex.actions), function(action, callback) {
-      action.info(req, res, function(err, info) {
+    async.eachSeries(_.values(ActionIndex.actions), (action, callback) => {
+      action.info(req, res, (err, info) => {
         if (err) {
           return callback(err);
         }
@@ -534,7 +534,7 @@ module.exports = function(router) {
         addAction(info);
         callback();
       });
-    }, function(err) {
+    }, (err) => {
       if (err) {
         return next(err);
       }
@@ -544,13 +544,13 @@ module.exports = function(router) {
   });
 
   // Return a list of available actions.
-  router.get('/form/:formId/actions/:name', function(req, res, next) {
+  router.get('/form/:formId/actions/:name', (req, res, next) => {
     const action = ActionIndex.actions[req.params.name];
     if (!action) {
       return res.status(400).send('Action not found');
     }
 
-    action.info(req, res, function(err, info) {
+    action.info(req, res, (err, info) => {
       if (err) {
         return next(err);
       }
@@ -563,12 +563,12 @@ module.exports = function(router) {
       });
 
       try {
-        getSettingsForm(action, req, function(err, settings) {
+        getSettingsForm(action, req, (err, settings) => {
           if (err) {
             return res.status(400).send(err);
           }
 
-          action.settingsForm(req, res, function(err, settingsForm) {
+          action.settingsForm(req, res, (err, settingsForm) => {
             if (err) {
               return next(err);
             }
@@ -582,7 +582,7 @@ module.exports = function(router) {
             }];
 
             info.settingsForm = settings.settingsForm;
-            info.settingsForm.action = hook.alter('path', '/form/' + req.params.formId + '/action', req);
+            info.settingsForm.action = hook.alter('path', `/form/${  req.params.formId  }/action`, req);
             hook.alter('actionInfo', info, req);
             res.json(info);
           });
@@ -608,14 +608,14 @@ module.exports = function(router) {
 
       // Make sure to store handler to lowercase.
       if (req.body.handler) {
-        _.each(req.body.handler, function(handler, index) {
+        _.each(req.body.handler, (handler, index) => {
           req.body.handler[index] = handler.toLowerCase();
         });
       }
 
       // Make sure the method is uppercase.
       if (req.body.method) {
-        _.each(req.body.method, function(method, index) {
+        _.each(req.body.method, (method, index) => {
           req.body.method[index] = method.toLowerCase();
         });
       }
@@ -631,7 +631,7 @@ module.exports = function(router) {
   // After Index middleware for actions.
   const indexPayload = function(req, res, next) {
     res.resource.status = 200;
-    _.each(res.resource.item, function(item) {
+    _.each(res.resource.item, (item) => {
       if (ActionIndex.actions.hasOwnProperty(item.name)) {
         item = _.assign(item, ActionIndex.actions[item.name].info);
       }
@@ -643,12 +643,12 @@ module.exports = function(router) {
   // Build the middleware stack.
   const handlers = {};
   const methods = ['Post', 'Get', 'Put', 'Index', 'Delete'];
-  methods.forEach(function(method) {
-    handlers['before' + method] = [
+  methods.forEach((method) => {
+    handlers[`before${  method}`] = [
       router.formio.middleware.filterMongooseExists({field: 'deleted', isNull: true}),
       actionPayload
     ];
-    handlers['after' + method] = [
+    handlers[`after${  method}`] = [
       router.formio.middleware.filterResourcejsResponse(['deleted', '__v', 'externalTokens'])
     ];
   });

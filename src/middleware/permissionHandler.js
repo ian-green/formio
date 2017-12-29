@@ -36,7 +36,7 @@ module.exports = function(router) {
       return;
     }
     if (!submission || !access) {
-      debug.getSubmissionResourceAccess('No submission (' + !!submission + ') or access (' + !!access + ') given.');
+      debug.getSubmissionResourceAccess(`No submission (${  !!submission  }) or access (${  !!access  }) given.`);
       return next();
     }
     if (!_.has(submission, 'access')) {
@@ -45,7 +45,7 @@ module.exports = function(router) {
     }
 
     /* eslint-disable camelcase */
-    async.each(submission.access, function(permission, callback) {
+    async.each(submission.access, (permission, callback) => {
       // Only process the permission if it's in the correct format.
       if (!_.has(permission, 'type') || !_.has(permission, 'resources')) {
         debug.getSubmissionResourceAccess('Unknown permissions format');
@@ -64,12 +64,12 @@ module.exports = function(router) {
 
       // Convert the simplex read/write/admin rules into *_all permissions.
       if (permission.type === 'read') {
-        _.each(permission.resources, function(id) {
+        _.each(permission.resources, (id) => {
           access.submission.read_all.push(id);
         });
       }
       else if (permission.type === 'write') {
-        _.each(permission.resources, function(id) {
+        _.each(permission.resources, (id) => {
           access.submission.read_all.push(id);
           access.submission.update_all.push(id);
 
@@ -79,7 +79,7 @@ module.exports = function(router) {
         });
       }
       else if (permission.type === 'admin') {
-        _.each(permission.resources, function(id) {
+        _.each(permission.resources, (id) => {
           access.submission.read_all.push(id);
           access.submission.update_all.push(id);
           access.submission.delete_all.push(id);
@@ -91,7 +91,7 @@ module.exports = function(router) {
       }
 
       callback();
-    }, function(err) {
+    }, (err) => {
       // Force all the permissions to be unique, even if an error occurred.
       access.submission.read_all = _(access.submission.read_all).uniq().value();
       access.submission.update_all = _(access.submission.update_all).uniq().value();
@@ -176,14 +176,14 @@ module.exports = function(router) {
           }
 
           // Load the form, and get its roles/permissions data.
-          router.formio.cache.loadForm(req, null, req.formId, function(err, item) {
+          router.formio.cache.loadForm(req, null, req.formId, (err, item) => {
             if (err) {
               debug.getAccess.getFormAccess(err);
               return callback(err);
             }
             if (!item) {
-              debug.getAccess.getFormAccess('No Form found with formId: ' + req.formId);
-              return callback('No Form found with formId: ' + req.formId);
+              debug.getAccess.getFormAccess(`No Form found with formId: ${  req.formId}`);
+              return callback(`No Form found with formId: ${  req.formId}`);
             }
 
             // If this a Resource, search for the presence of Self Access Permissions.
@@ -199,11 +199,11 @@ module.exports = function(router) {
                 ? item.owner.toString()
                 : null;
 
-              item.access.forEach(function(permission) {
+              item.access.forEach((permission) => {
                 // Define this access type.
                 access.form[permission.type] = access.form[permission.type] || [];
 
-                permission.roles.forEach(function(id) {
+                permission.roles.forEach((id) => {
                   // Add each roleId to the role array for this access type.
                   access.form[permission.type].push(id.toString());
                 });
@@ -212,7 +212,7 @@ module.exports = function(router) {
 
             // Add the defined access types for the form submissions.
             if (item.submissionAccess) {
-              item.submissionAccess.forEach(function(permission) {
+              item.submissionAccess.forEach((permission) => {
                 // Define this access type.
                 access.submission[permission.type] = access.submission[permission.type] || [];
 
@@ -222,7 +222,7 @@ module.exports = function(router) {
                   access.submission.create_all = access.submission.create_all || []; //eslint-disable-line camelcase
                 }
 
-                permission.roles.forEach(function(id) {
+                permission.roles.forEach((id) => {
                   // Add each roleId to the role array for this access type.
                   access.submission[permission.type].push(id.toString());
 
@@ -251,7 +251,7 @@ module.exports = function(router) {
           }
 
           // Get the submission by request id and query its access.
-          router.formio.cache.loadSubmission(req, req.formId, req.subId, function(err, submission) {
+          router.formio.cache.loadSubmission(req, req.formId, req.subId, (err, submission) => {
             if (err) {
               debug.getAccess.getSubmissionAccess(err);
               return callback(400);
@@ -259,7 +259,7 @@ module.exports = function(router) {
 
             // No submission exists.
             if (!submission) {
-              debug.getAccess.getSubmissionAccess('No submission found w/ _id: ' + req.subId);
+              debug.getAccess.getSubmissionAccess(`No submission found w/ _id: ${  req.subId}`);
               return callback(404);
             }
 
@@ -282,24 +282,24 @@ module.exports = function(router) {
         // Determine if this is a possible index request against submissions.
         function flagRequestAsSubmissionResourceAccess(callback) {
           if (req.method !== 'GET') {
-            debug.getAccess.flagRequest('Skipping, request type not GET ' + req.method);
+            debug.getAccess.flagRequest(`Skipping, request type not GET ${  req.method}`);
             return callback();
           }
 
           if (!req.formId || req.subId) {
-            const message = 'Skipping, no req.formId (' + !req.formId + ') or req.subId (' + req.subId + ')';
+            const message = `Skipping, no req.formId (${  !req.formId  }) or req.subId (${  req.subId  })`;
             debug.getAccess.flagRequest(message);
             return callback();
           }
 
           if (!_.has(req, 'user._id')) {
-            debug.getAccess.flagRequest('Skipping, no req.user._id (' + req.user + ')');
+            debug.getAccess.flagRequest(`Skipping, no req.user._id (${  req.user  })`);
             return callback();
           }
 
           const user = req.user._id;
           const search = [util.idToBson(user)];
-          hook.alter('resourceAccessFilter', search, req, function(err, search) {
+          hook.alter('resourceAccessFilter', search, req, (err, search) => {
             // Try to recover if the hook fails.
             if (err) {
               debug.getAccess.flagRequest(err);
@@ -317,13 +317,13 @@ module.exports = function(router) {
             };
 
             const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-            submissionModel.count(query, function(err, count) {
+            submissionModel.count(query, (err, count) => {
               if (err) {
                 debug.getAccess.flagRequest(err);
                 return callback();
               }
 
-              debug.getAccess.flagRequest('count: ' + count);
+              debug.getAccess.flagRequest(`count: ${  count}`);
               if (count > 0) {
                 req.submissionResourceAccessFilter = true;
 
@@ -336,7 +336,7 @@ module.exports = function(router) {
             });
           });
         }
-      ], req, res, access), function(err) {
+      ], req, res, access), (err) => {
         if (err) {
           debug.permissions(err);
           return done(err);
@@ -351,7 +351,7 @@ module.exports = function(router) {
           }
           else {
             // Load the default role.
-            router.formio.resources.role.model.findOne(hook.alter('roleQuery', query, req), function(err, role) {
+            router.formio.resources.role.model.findOne(hook.alter('roleQuery', query, req), (err, role) => {
               if (err) {
                 return done(err);
               }
@@ -369,7 +369,7 @@ module.exports = function(router) {
         async.series([
           async.apply(loadRole, 'defaultRole', {default: true}),
           async.apply(loadRole, 'adminRole', {admin: true})
-        ], function(err) {
+        ], (err) => {
           if (err) {
             debug.permissions(err);
             return done(err);
@@ -443,9 +443,9 @@ module.exports = function(router) {
         req.ownerAssign = true;
       }
 
-      debug.permissions('req.submissionResourceAccessAdminBlock: ' + req.submissionResourceAccessAdminBlock);
-      debug.permissions('Checking access for method: ' + method);
-      debug.permissions('Checking access for user: ' + user);
+      debug.permissions(`req.submissionResourceAccessAdminBlock: ${  req.submissionResourceAccessAdminBlock}`);
+      debug.permissions(`Checking access for method: ${  method}`);
+      debug.permissions(`Checking access for user: ${  user}`);
 
       // There should be an entity at this point.
       if (!entity) {
@@ -492,9 +492,9 @@ module.exports = function(router) {
         return false;
       }
 
-      search.forEach(function(type) {
+      search.forEach((type) => {
         // Check if the given roles are contained within the allowed roles for our
-        roles.forEach(function(role) {
+        roles.forEach((role) => {
           // Grant access if the role was found in the access for this resource.
           if (
             access.hasOwnProperty(entity.type)
@@ -555,18 +555,18 @@ module.exports = function(router) {
           }
 
           debug.permissions('----------------------------------------------------');
-          debug.permissions('type: ' + type);
-          debug.permissions('role: ' + role);
-          debug.permissions('_hasAccess: ' + _hasAccess);
-          debug.permissions('selfAccess: ' + req.selfAccess);
+          debug.permissions(`type: ${  type}`);
+          debug.permissions(`role: ${  role}`);
+          debug.permissions(`_hasAccess: ${  _hasAccess}`);
+          debug.permissions(`selfAccess: ${  req.selfAccess}`);
         });
       });
 
       // No prior access was granted, the given role does not have access to this resource using the given method.
-      debug.permissions('assignOwner: ' + req.assignOwner);
-      debug.permissions('assignSubmissionAccess: ' + req.assignSubmissionAccess);
-      debug.permissions('req.submissionResourceAccessFilter: ' + req.submissionResourceAccessFilter);
-      debug.permissions('hasAccess: ' + _hasAccess);
+      debug.permissions(`assignOwner: ${  req.assignOwner}`);
+      debug.permissions(`assignSubmissionAccess: ${  req.assignSubmissionAccess}`);
+      debug.permissions(`req.submissionResourceAccessFilter: ${  req.submissionResourceAccessFilter}`);
+      debug.permissions(`hasAccess: ${  _hasAccess}`);
       return _hasAccess;
     }
     /* eslint-enable max-statements */
@@ -588,7 +588,7 @@ module.exports = function(router) {
     // Check for whitelisted paths.
     if (req.method === 'GET') {
       const whitelist = ['/health', '/current', '/logout', '/access', '/token'];
-      let skip = _.some(whitelist, function(path) {
+      let skip = _.some(whitelist, (path) => {
         if ((req.url === path) || (req.url === hook.alter('path', path, req))) {
           return true;
         }
@@ -610,7 +610,7 @@ module.exports = function(router) {
     }
 
     // Determine if we are trying to access and entity of the form or submission.
-    router.formio.access.getAccess(req, res, function(err, access) {
+    router.formio.access.getAccess(req, res, (err, access) => {
       if (err) {
         debug.permissions(err);
         if (_.isNumber(err)) {
@@ -663,7 +663,7 @@ module.exports = function(router) {
       // If this passes, it is up to the submissionResourceAccessFilter middleware to handle permissions.
       if (_.has(req, 'submissionResourceAccessFilter') && req.submissionResourceAccessFilter) {
         /* eslint-disable max-len */
-        debug.permissions('Granting access because req.submissionResourceAccessFilter: ' + req.submissionResourceAccessFilter);
+        debug.permissions(`Granting access because req.submissionResourceAccessFilter: ${  req.submissionResourceAccessFilter}`);
         /* eslint-enable max-len */
         req.skipOwnerFilter = true;
         return next();

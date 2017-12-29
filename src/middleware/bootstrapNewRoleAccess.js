@@ -37,7 +37,7 @@ module.exports = function(router) {
       debug(query);
 
       // Query the forms collection, to build the updated form access list.
-      router.formio.resources.form.model.find(query).snapshot().exec(function(err, forms) {
+      router.formio.resources.form.model.find(query).snapshot().exec((err, forms) => {
         if (err) {
           debug(err);
           return done(err);
@@ -47,7 +47,7 @@ module.exports = function(router) {
           return done();
         }
 
-        async.eachSeries(forms, function(form, formDone) {
+        async.eachSeries(forms, (form, formDone) => {
           debug('Loaded Form');
 
           // Add the new roleId to the access list for read_all (form).
@@ -71,7 +71,7 @@ module.exports = function(router) {
           }
 
           // Save the updated permissions.
-          form.save(function(err, form) {
+          form.save((err, form) => {
             if (err) {
               debug(err);
               return formDone(err);
@@ -85,11 +85,11 @@ module.exports = function(router) {
 
     const bound = [];
     const fns = hook.alter('newRoleAccess', [updateForms], req);
-    fns.forEach(function(f) {
+    fns.forEach((f) => {
       bound.push(async.apply(f, roleId));
     });
 
-    async.series(bound, function(err, result) {
+    async.series(bound, (err, result) => {
       if (err) {
         debug(err);
         return next(err);

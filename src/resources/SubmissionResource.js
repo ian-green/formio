@@ -80,9 +80,9 @@ module.exports = function(router) {
   ];
 
   // Register an exists endpoint to see if a submission exists.
-  router.get('/form/:formId/exists', function(req, res, next) {
+  router.get('/form/:formId/exists', (req, res, next) => {
     // First load the form.
-    router.formio.cache.loadCurrentForm(req, function(err, form) {
+    router.formio.cache.loadCurrentForm(req, (err, form) => {
       if (err) {
         return next(err);
       }
@@ -103,7 +103,7 @@ module.exports = function(router) {
       }
 
       const queryComponents = {};
-      _.each(req.query, function(value, key) {
+      _.each(req.query, (value, key) => {
         const parts = key.split('.');
         if (parts[0] === 'data' && parts.length > 1) {
           queryComponents[parts[1]] = {
@@ -114,7 +114,7 @@ module.exports = function(router) {
       });
 
       // Build the data query.
-      utils.eachComponent(form.components, function(component) {
+      utils.eachComponent(form.components, (component) => {
         // Only add components that are not protected and are persistent.
         if (
           queryComponents.hasOwnProperty(component.key) &&
@@ -139,7 +139,7 @@ module.exports = function(router) {
       const submissionModel = req.submissionModel || router.formio.resources.submission.model;
 
       // Query the submissions for this submission.
-      submissionModel.findOne(query, function(err, submission) {
+      submissionModel.findOne(query, (err, submission) => {
         if (err) {
           return next(err);
         }

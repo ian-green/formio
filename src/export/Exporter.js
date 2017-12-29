@@ -18,7 +18,7 @@ const Exporter = function(form, req, res) {
  */
 Exporter.prototype.init = function() {
   const deferred = Q.defer();
-  this.res.setHeader('Content-Disposition', 'attachment; filename=export.' + this.extension);
+  this.res.setHeader('Content-Disposition', `attachment; filename=export.${  this.extension}`);
   this.res.setHeader('Content-Type', this.contentType);
   this.start(deferred);
   return deferred.promise;

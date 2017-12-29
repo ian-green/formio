@@ -36,13 +36,13 @@ module.exports = function(formio, items, done) {
   var download = function(url, zipFile, dir, done) {
     // Check to see if the client already exists.
     if (fs.existsSync(zipFile)) {
-      util.log(directories[dir] + ' file already exists, skipping download.');
+      util.log(`${directories[dir]  } file already exists, skipping download.`);
       return done();
     }
 
     var request = require('request');
     var ProgressBar = require('progress');
-    util.log('Downloading ' + dir + '...'.green);
+    util.log(`Downloading ${  dir  }${'...'.green}`);
 
     // Download the project.
     var downloadError = null;
@@ -50,7 +50,7 @@ module.exports = function(formio, items, done) {
     var bar = null;
     (function downloadProject() {
       request.get(url)
-        .on('response', function(res) {
+        .on('response', (res) => {
           if (
             !res.headers.hasOwnProperty('content-disposition') ||
             !parseInt(res.headers['content-length'], 10)
@@ -74,16 +74,16 @@ module.exports = function(formio, items, done) {
           res.pipe(fs.createWriteStream(zipFile, {
             flags: 'w'
           }));
-          res.on('data', function(chunk) {
+          res.on('data', (chunk) => {
             if (bar) {
               bar.tick(chunk.length);
             }
           });
-          res.on('error', function(err) {
+          res.on('error', (err) => {
             downloadError = err;
           });
-          res.on('end', function() {
-            setTimeout(function() {
+          res.on('end', () => {
+            setTimeout(() => {
               done(downloadError);
             }, 100);
           });
@@ -103,7 +103,7 @@ module.exports = function(formio, items, done) {
   var extract = function(zipFile, fromDir, dir, done) {
     // See if we need to extract.
     if (fs.existsSync(directories[dir])) {
-      util.log(directories[dir] + ' already exists, skipping extraction.');
+      util.log(`${directories[dir]  } already exists, skipping extraction.`);
       return done();
     }
 
@@ -112,7 +112,7 @@ module.exports = function(formio, items, done) {
     util.log('Extracting contents...'.green);
     var zip = new AdmZip(zipFile);
     zip.extractAllTo('', true);
-    fs.move(fromDir, directories[dir], function(err) {
+    fs.move(fromDir, directories[dir], (err) => {
       if (err) {
         return done(err);
       }
@@ -166,7 +166,7 @@ module.exports = function(formio, items, done) {
           description: 'Are you sure you wish to install? (y/N)',
           required: true
         }
-      ], function(err, results) {
+      ], (err, results) => {
         if (err) {
           return done(err);
         }
@@ -189,8 +189,8 @@ module.exports = function(formio, items, done) {
         'https://github.com/formio/formio-app-basic'
       ];
       var message = '\nWhich Github application would you like to install?\n'.green;
-      _.each(repos, function(repo, index) {
-        message += '  ' + (index + 1) + '.) ' + repo + '\n';
+      _.each(repos, (repo, index) => {
+        message += `  ${  index + 1  }.) ${  repo  }\n`;
       });
       message += '\nOr, you can provide a custom Github repository...\n'.green;
       util.log(message);
@@ -201,7 +201,7 @@ module.exports = function(formio, items, done) {
           default: '1',
           required: true
         }
-      ], function(err, results) {
+      ], (err, results) => {
         if (err) {
           return done(err);
         }
@@ -237,7 +237,7 @@ module.exports = function(formio, items, done) {
 
       // Download the app.
       download(
-        'https://nodeload.github.com/' + application + '/zip/master',
+        `https://nodeload.github.com/${  application  }/zip/master`,
         'app.zip',
         'app',
         done
@@ -256,7 +256,7 @@ module.exports = function(formio, items, done) {
       }
 
       var parts = application.split('/');
-      var appDir = parts[1] + '-master';
+      var appDir = `${parts[1]  }-master`;
       extract('app.zip', appDir, 'app', done);
     },
 
@@ -317,7 +317,7 @@ module.exports = function(formio, items, done) {
           default: 'client',
           required: true
         }
-      ], function(err, results) {
+      ], (err, results) => {
         if (err) {
           return done(err);
         }
@@ -376,7 +376,7 @@ module.exports = function(formio, items, done) {
       // Get the form.io service.
       util.log('Importing template...'.green);
       var importer = require('./src/templates/import')({formio: formio});
-      importer.template(template, function(err, template) {
+      importer.template(template, (err, template) => {
         if (err) {
           return done(err);
         }
@@ -410,13 +410,13 @@ module.exports = function(formio, items, done) {
           require: true,
           hidden: true
         }
-      ], function(err, result) {
+      ], (err, result) => {
         if (err) {
           return done(err);
         }
 
         util.log('Encrypting password');
-        formio.encrypt(result.password, function(err, hash) {
+        formio.encrypt(result.password, (err, hash) => {
           if (err) {
             return done(err);
           }
@@ -432,7 +432,7 @@ module.exports = function(formio, items, done) {
             roles: [
               project.roles.administrator._id
             ]
-          }, function(err, item) {
+          }, (err, item) => {
             if (err) {
               return done(err);
             }
@@ -456,7 +456,7 @@ module.exports = function(formio, items, done) {
     steps.whatTemplate,
     steps.importTemplate,
     steps.createRootUser
-  ], function(err, result) {
+  ], (err, result) => {
     if (err) {
       util.log(err);
       return done(err);

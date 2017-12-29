@@ -47,9 +47,9 @@ module.exports = function(router) {
       query.form = {$in: forms};
     }
 
-    debug('Deleting ' + (subId ? 'single submission' : 'multiple submissions'));
+    debug(`Deleting ${  subId ? 'single submission' : 'multiple submissions'}`);
     const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-    submissionModel.find(query, function(err, submissions) {
+    submissionModel.find(query, (err, submissions) => {
       if (err) {
         debug(err);
         return next(err);
@@ -59,7 +59,7 @@ module.exports = function(router) {
         return next();
       }
 
-      async.eachSeries(submissions, function(submission, cb) {
+      async.eachSeries(submissions, (submission, cb) => {
         submission.deleted = Date.now();
         submission.markModified('deleted');
         submission.save(cb);
@@ -102,9 +102,9 @@ module.exports = function(router) {
       query.form = {$in: forms};
     }
 
-    debug('Deleting ' + (actionId ? 'single action' : 'multiple actions'));
+    debug(`Deleting ${  actionId ? 'single action' : 'multiple actions'}`);
     debug(query);
-    router.formio.actions.model.find(query, function(err, actions) {
+    router.formio.actions.model.find(query, (err, actions) => {
       if (err) {
         debug(err);
         return next(err);
@@ -114,7 +114,7 @@ module.exports = function(router) {
         return next();
       }
 
-      async.eachSeries(actions, function(action, cb) {
+      async.eachSeries(actions, (action, cb) => {
         action.settings = action.settings || {};
         action.deleted = Date.now();
         action.markModified('deleted');
@@ -141,25 +141,25 @@ module.exports = function(router) {
 
     const query = {_id: util.idToBson(formId), deleted: {$eq: null}};
     debug(query);
-    router.formio.resources.form.model.findOne(query, function(err, form) {
+    router.formio.resources.form.model.findOne(query, (err, form) => {
       if (err) {
         debug(err);
         return next(err);
       }
       if (!form) {
-        debug('No form found with the _id: ' + formId);
+        debug(`No form found with the _id: ${  formId}`);
         return next();
       }
 
       form.deleted = Date.now();
       form.markModified('deleted');
-      form.save(function(err) {
+      form.save((err) => {
         if (err) {
           debug(err);
           return next(err);
         }
 
-        deleteAction(null, formId, req, function(err) {
+        deleteAction(null, formId, req, (err) => {
           if (err) {
             debug(err);
             return next(err);
@@ -207,9 +207,9 @@ module.exports = function(router) {
     const removeFromForm = function(cb) {
       // Build the or query on accessTypes.
       const or = [];
-      accessType.forEach(function(access) {
+      accessType.forEach((access) => {
         const temp = {};
-        const key = access + '.roles';
+        const key = `${access  }.roles`;
         temp[key] = util.idToBson(roleId);
         or.push(temp);
       });
@@ -219,7 +219,7 @@ module.exports = function(router) {
       query = hook.alter('formQuery', query, req);
 
       debug(query);
-      router.formio.resources.form.model.find(query).snapshot(true).exec(function(err, forms) {
+      router.formio.resources.form.model.find(query).snapshot(true).exec((err, forms) => {
         if (err) {
           debug(err);
           return cb(err);
@@ -229,10 +229,10 @@ module.exports = function(router) {
         }
 
         // Iterate each form and remove the role.
-        debug('Found ' + forms.length + ' forms to modify.');
-        async.eachSeries(forms, function(form, done) {
+        debug(`Found ${  forms.length  } forms to modify.`);
+        async.eachSeries(forms, (form, done) => {
           // Iterate each access type to remove the role.
-          accessType.forEach(function(access) {
+          accessType.forEach((access) => {
             const temp = form.toObject()[access] || [];
 
             // Iterate the roles for each permission type, and remove the given roleId.
@@ -269,7 +269,7 @@ module.exports = function(router) {
       const query = {form: {$in: _.map(formIds, util.idToBson)}, deleted: {$eq: null}, roles: util.idToBson(roleId)};
       debug(query);
       const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-      submissionModel.find(query).snapshot(true).exec(function(err, submissions) {
+      submissionModel.find(query).snapshot(true).exec((err, submissions) => {
         if (err) {
           debug(err);
           return cb(err);
@@ -279,7 +279,7 @@ module.exports = function(router) {
         }
 
         // Iterate each submission to filter the roles.
-        async.eachSeries(submissions, function(submission, done) {
+        async.eachSeries(submissions, (submission, done) => {
           let temp = _.map((submission.toObject().roles || []), util.idToString);
 
           // Omit the given role from all submissions.
@@ -301,7 +301,7 @@ module.exports = function(router) {
     let query = {deleted: {$eq: null}};
     query = hook.alter('formQuery', query, req);
 
-    router.formio.resources.form.model.find(query).select('_id').snapshot(true).exec(function(err, ids) {
+    router.formio.resources.form.model.find(query).select('_id').snapshot(true).exec((err, ids) => {
       if (err) {
         debug(err);
         return next(err);
@@ -344,19 +344,19 @@ module.exports = function(router) {
 
     const query = {_id: util.idToBson(roleId), deleted: {$eq: null}};
     debug(query);
-    router.formio.resources.role.model.findOne(query, function(err, role) {
+    router.formio.resources.role.model.findOne(query, (err, role) => {
       if (err) {
         debug(err);
         return next(err);
       }
       if (!role) {
-        debug('No role found with _id: ' + roleId);
+        debug(`No role found with _id: ${  roleId}`);
         return next();
       }
 
       role.deleted = Date.now();
       role.markModified('deleted');
-      role.save(function(err) {
+      role.save((err) => {
         if (err) {
           debug(err);
           return next(err);

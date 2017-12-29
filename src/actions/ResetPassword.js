@@ -45,13 +45,13 @@ module.exports = function(router) {
 
   ResetPasswordAction.settingsForm = function(req, res, next) {
     // Get the available email transports.
-    emailer.availableTransports(req, function(err, availableTransports) {
+    emailer.availableTransports(req, (err, availableTransports) => {
       if (err) {
         return next(err);
       }
 
       const basePath = hook.alter('path', '/form', req);
-      const dataSrc = basePath + '/' + req.params.formId + '/components';
+      const dataSrc = `${basePath  }/${  req.params.formId  }/components`;
 
       // Return the reset password information.
       next(null, [
@@ -62,7 +62,7 @@ module.exports = function(router) {
           key: 'resources',
           placeholder: 'Select the resources we should reset password against.',
           dataSrc: 'url',
-          data: {url: basePath + '?type=resource'},
+          data: {url: `${basePath  }?type=resource`},
           valueProperty: '_id',
           template: '<span>{{ item.title }}</span>',
           multiple: true,
@@ -194,26 +194,26 @@ module.exports = function(router) {
     }
 
     // Set the name of the key for the mongo query.
-    const usernamekey = 'data.' + this.settings.username;
+    const usernamekey = `data.${  this.settings.username}`;
 
     // Create the query.
     const query = {
       deleted: {$eq: null}
     };
 
-    query[usernamekey] = {$regex: new RegExp('^' + util.escapeRegExp(token.username) + '$'), $options: 'i'};
+    query[usernamekey] = {$regex: new RegExp(`^${  util.escapeRegExp(token.username)  }$`), $options: 'i'};
     query.form = {$in: _.map(token.resources, mongoose.Types.ObjectId)};
 
     // Perform a mongo query to find the submission.
     const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-    submissionModel.findOne(query, function(err, submission) {
+    submissionModel.findOne(query, (err, submission) => {
       if (err || !submission) {
         return next.call(this, 'Submission not found.');
       }
 
       // Submission found.
       next.call(this, null, submission);
-    }.bind(this));
+    });
   };
 
   /**
@@ -238,29 +238,29 @@ module.exports = function(router) {
       }
 
       // Manually encrypt and update the password.
-      router.formio.encrypt(password, function(err, hash) {
+      router.formio.encrypt(password, (err, hash) => {
         if (err) {
           return next.call(this, 'Unable to change password.');
         }
 
         const setValue = {};
-        setValue['data.' + this.settings.password] = hash;
+        setValue[`data.${  this.settings.password}`] = hash;
 
         // Update the password.
         const submissionModel = req.submissionModel || router.formio.resources.submission.model;
         submissionModel.update(
           {_id: submission._id},
           {$set: setValue},
-          function(err, newSub) {
+          (err, newSub) => {
             if (err) {
               return next.call(this, 'Unable to reset password.');
             }
 
             // The submission was saved!
             next.call(this, null, submission);
-          }.bind(this)
+          }
         );
-      }.bind(this));
+      });
     });
   };
 
@@ -301,7 +301,7 @@ module.exports = function(router) {
 
         // Create the reset link and add it to the email parameters.
         const params = {
-          resetlink: this.settings.url + '?x-jwt-token=' + resetToken
+          resetlink: `${this.settings.url  }?x-jwt-token=${  resetToken}`
         };
 
         // Now send them an email.
@@ -311,7 +311,7 @@ module.exports = function(router) {
           emails: username,
           subject: this.settings.subject,
           message: this.settings.message
-        }, _.assign(params, req.body), function() {
+        }, _.assign(params, req.body), () => {
           // Let them know an email is on its way.
           res.status(200).json({
             message: 'Password reset email was sent.'
@@ -357,7 +357,7 @@ module.exports = function(router) {
       res.resource.item._id
     ) {
       // Modify the form based on if there is a reset token or not.
-      util.eachComponent(res.resource.item.components, function(component) {
+      util.eachComponent(res.resource.item.components, (component) => {
         if (
           !hasResetToken &&
           (component.type === 'button') &&
@@ -374,7 +374,7 @@ module.exports = function(router) {
             component.validate.required = false;
           }
         }
-      }.bind(this));
+      });
 
       return next();
     }
@@ -399,7 +399,7 @@ module.exports = function(router) {
       }
 
       // Update the password.
-      this.updatePassword(req, req.tempToken, password, function(err) {
+      this.updatePassword(req, req.tempToken, password, (err) => {
         if (err) {
           return res.status(400).send('Unable to update the password. Please try again.');
         }

@@ -17,7 +17,7 @@ module.exports = function(router) {
         return next();
       }
 
-      router.formio.cache.loadForm(req, null, getForm(req), function(err, form) {
+      router.formio.cache.loadForm(req, null, getForm(req), (err, form) => {
         if (err) {
           return next(err);
         }

@@ -42,7 +42,7 @@ module.exports = function(router) {
    */
   EmailAction.settingsForm = function(req, res, next) {
     // Get the available transports.
-    emailer.availableTransports(req, function(err, availableTransports) {
+    emailer.availableTransports(req, (err, availableTransports) => {
       if (err) {
         return next(err);
       }

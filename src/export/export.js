@@ -10,7 +10,7 @@ module.exports = function(router) {
   const hook = require('../util/hook')(router.formio);
 
   // Mount the export endpoint using the url.
-  router.get('/form/:formId/export', function(req, res, next) {
+  router.get('/form/:formId/export', (req, res, next) => {
     if (!_.has(req, 'token') || !_.has(req, 'token.user._id')) {
       return res.sendStatus(400);
     }
@@ -26,7 +26,7 @@ module.exports = function(router) {
     }
 
     // Load the form.
-    router.formio.cache.loadCurrentForm(req, function(err, form) {
+    router.formio.cache.loadCurrentForm(req, (err, form) => {
       if (err) {
         return res.sendStatus(401);
       }
@@ -59,9 +59,9 @@ module.exports = function(router) {
 
       // Initialize the exporter.
       exporter.init()
-        .then(function() {
+        .then(() => {
           const addUrl = function(data) {
-            _.each(data, function(field) {
+            _.each(data, (field) => {
               if (field && field._id) {
                 // Add url property for resource fields
                 const fieldUrl = hook.alter('fieldUrl', `/form/${field.form}/submission/${field._id}`, form, field);
@@ -96,7 +96,7 @@ module.exports = function(router) {
           // Create the stream.
           return exporter.stream(stream);
         })
-        .catch(function(error) {
+        .catch((error) => {
           // Send the error.
           res.status(500).send(error);
         });

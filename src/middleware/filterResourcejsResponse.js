@@ -37,7 +37,7 @@ module.exports = (router) => (settings) => (req, res, next) => {
       }
       // Remove the key if found.
       if (list[b].hasOwnProperty(settings[a])) {
-        debug('Removing: ' + settings[a]);
+        debug(`Removing: ${  settings[a]}`);
         list[b] = _.omit(list[b], settings[a]);
       }
     }

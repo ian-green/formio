@@ -12,7 +12,7 @@ module.exports = function(req, router, cb) {
    * @returns {*}
    */
   const resourceUrl = function(form) {
-    return '/' + form.path + '/submission';
+    return `/${  form.path  }/submission`;
   };
 
   /*eslint-disable camelcase*/
@@ -110,7 +110,7 @@ module.exports = function(req, router, cb) {
       required: []
     };
 
-    util.eachComponent(components, function(component) {
+    util.eachComponent(components, (component) => {
       if (component.key) {
         let property;
         switch (component.type) {
@@ -217,9 +217,9 @@ module.exports = function(req, router, cb) {
     // Override the body definition.
     swagger.definitions[resource.modelName].required = ['data'];
     swagger.definitions[resource.modelName].properties.data = {
-      $ref: '#/definitions/' + resource.modelName + 'Data'
+      $ref: `#/definitions/${  resource.modelName  }Data`
     };
-    swagger.definitions = _.merge(swagger.definitions, getDefinition(form.components, resource.modelName + 'Data'));
+    swagger.definitions = _.merge(swagger.definitions, getDefinition(form.components, `${resource.modelName  }Data`));
     return swagger;
   };
 
@@ -235,13 +235,13 @@ module.exports = function(req, router, cb) {
       options.shortTitle = 'Form.io';
     }
     if (!options.title) {
-      options.title = options.shortTitle + ' API';
+      options.title = `${options.shortTitle  } API`;
     }
     if (!options.description) {
-      options.description = options.shortTitle + ' Swagger 2.0 API specification.  This API spec can be used for '
-        + 'integrating your Form.io project into non-HTML5 programs like "native" phone apps, "legacy" and "enterprise"'
-        + ' systems, embedded "Internet of Things" applications (IoT), and other programming languages.  Note: '
-        + 'The URL\'s below are configured for your specific project and form.';
+      options.description = `${options.shortTitle  } Swagger 2.0 API specification.  This API spec can be used for `
+        + `integrating your Form.io project into non-HTML5 programs like "native" phone apps, "legacy" and "enterprise"`
+        + ` systems, embedded "Internet of Things" applications (IoT), and other programming languages.  Note: `
+        + `The URL's below are configured for your specific project and form.`;
     }
     if (!options.version) {
       options.version = '1.0.0';
@@ -261,7 +261,7 @@ module.exports = function(req, router, cb) {
     let paths = {};
     let definitions = {};
 
-    _.each(specs, function(spec) {
+    _.each(specs, (spec) => {
       paths = _.assign(paths, spec.paths);
       definitions = _.assign(definitions, spec.definitions);
     });
@@ -306,7 +306,7 @@ module.exports = function(req, router, cb) {
   };
 
   if (!_.isNil(req.formId)) {
-    router.formio.cache.loadCurrentForm(req, function(err, form) {
+    router.formio.cache.loadCurrentForm(req, (err, form) => {
       if (err) {
         throw err;
       }
@@ -317,13 +317,13 @@ module.exports = function(req, router, cb) {
     });
   }
   else {
-    router.formio.resources.form.model.find(hook.alter('formQuery', {deleted: {$eq: null}}, req), function(err, forms) {
+    router.formio.resources.form.model.find(hook.alter('formQuery', {deleted: {$eq: null}}, req), (err, forms) => {
       if (err) {
         throw err;
       }
 
       const specs = [];
-      forms.forEach(function(form) {
+      forms.forEach((form) => {
         specs.push(submissionSwagger(form));
       });
       cb(swaggerSpec(specs, options));

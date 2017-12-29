@@ -25,7 +25,7 @@ module.exports = (router) => (req, res, next) => {
 
     _.assign(req.query, _(req.query)
       .omit('limit', 'skip', 'select', 'sort')
-      .mapValues(function(value, name) {
+      .mapValues((value, name) => {
         // Skip filters not looking at component data
         if (name.includes('data.')) {
           return value;

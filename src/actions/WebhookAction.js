@@ -192,7 +192,7 @@ module.exports = function(router) {
       }
 
       // Make the request.
-      debug('Request: ' + req.method.toLowerCase());
+      debug(`Request: ${  req.method.toLowerCase()}`);
       switch (req.method.toLowerCase()) {
         case 'get':
           rest.get(url, options).on('success', handleSuccess).on('fail', handleError);
@@ -208,7 +208,7 @@ module.exports = function(router) {
           rest.del(url, options).on('success', handleSuccess).on('fail', handleError);
           break;
         default:
-          return handleError('Could not match request method: ' + req.method.toLowerCase());
+          return handleError(`Could not match request method: ${  req.method.toLowerCase()}`);
       }
     }
     catch (e) {

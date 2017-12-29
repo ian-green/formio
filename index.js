@@ -59,7 +59,7 @@ module.exports = function(config) {
 
     // Run the healthCheck sanity check on /health
     /* eslint-disable max-statements */
-    router.formio.update.initialize(function(err, db) {
+    router.formio.update.initialize((err, db) => {
       // If an error occurred, then reject the initialization.
       if (err) {
         return deferred.reject(err);
@@ -91,7 +91,7 @@ module.exports = function(config) {
       router.use(methodOverride('X-HTTP-Method-Override'));
 
       // Error handler for malformed JSON
-      router.use(function(err, req, res, next) {
+      router.use((err, req, res, next) => {
         if (err instanceof SyntaxError) {
           res.status(400).send(err.message);
         }
@@ -101,7 +101,7 @@ module.exports = function(config) {
 
       // CORS Support
       var corsRoute = cors(router.formio.hook.alter('cors'));
-      router.use(function(req, res, next) {
+      router.use((req, res, next) => {
         if (req.url === '/') {
           return next();
         }
@@ -168,13 +168,13 @@ module.exports = function(config) {
       mongoose.connect(mongoUrl, mongoOptions);
 
       // Trigger when the connection is made.
-      mongoose.connection.on('error', function(err) {
+      mongoose.connection.on('error', (err) => {
         util.log(err.message);
         deferred.reject(err.message);
       });
 
       // Called when the connection is made.
-      mongoose.connection.once('open', function() {
+      mongoose.connection.once('open', () => {
         util.log(' > Mongo connection established.');
 
         // Load the BaseModel.
@@ -204,8 +204,8 @@ module.exports = function(config) {
         router.formio.cache = require('./src/cache/cache')(router);
 
         // Return the form components.
-        router.get('/form/:formId/components', function(req, res, next) {
-          router.formio.resources.form.model.findOne({_id: req.params.formId}, function(err, form) {
+        router.get('/form/:formId/components', (req, res, next) => {
+          router.formio.resources.form.model.findOne({_id: req.params.formId}, (err, form) => {
             if (err) {
               return next(err);
             }
@@ -217,11 +217,11 @@ module.exports = function(config) {
             var filter = Object.keys(req.query).length !== 0 ? _.omit(req.query, ['limit', 'skip']) : null;
             res.json(
               _(util.flattenComponents(form.components))
-              .filter(function(component) {
+              .filter((component) => {
                 if (!filter) {
                   return true;
                 }
-                return _.reduce(filter, function(prev, value, prop) {
+                return _.reduce(filter, (prev, value, prop) => {
                   if (!value) {
                     return prev && _.has(component, prop);
                   }
@@ -256,15 +256,15 @@ module.exports = function(config) {
 
         var swagger = require('./src/util/swagger');
         // Show the swagger for the whole site.
-        router.get('/spec.json', function(req, res, next) {
-          swagger(req, router, function(spec) {
+        router.get('/spec.json', (req, res, next) => {
+          swagger(req, router, (spec) => {
             res.json(spec);
           });
         });
 
         // Show the swagger for specific forms.
-        router.get('/form/:formId/spec.json', function(req, res, next) {
-          swagger(req, router, function(spec) {
+        router.get('/form/:formId/spec.json', (req, res, next) => {
+          swagger(req, router, (spec) => {
             res.json(spec);
           });
         });

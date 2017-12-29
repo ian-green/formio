@@ -17,7 +17,7 @@ module.exports = function(router) {
     }
 
     const final = [];
-    input.forEach(function(element) {
+    input.forEach((element) => {
       if (element && element._id) {
         final.push(element._id);
       }
@@ -34,8 +34,8 @@ module.exports = function(router) {
 
     const defaultPermissions = {};
     req.body.access = [];
-    router.formio.cache.loadForm(req, undefined, req.params.formId, function(err, form) {
-      util.eachComponent(form.components, function(component) {
+    router.formio.cache.loadForm(req, undefined, req.params.formId, (err, form) => {
+      util.eachComponent(form.components, (component) => {
         if (component.key && component.defaultPermission) {
           defaultPermissions[component.key] = component.defaultPermission;
         }
@@ -58,7 +58,7 @@ module.exports = function(router) {
           if (ids.length) {
             // Try to find and update an existing permission.
             let found = false;
-            req.body.access.forEach(function(permission) {
+            req.body.access.forEach((permission) => {
               if (permission.type === perm) {
                 found = true;
                 permission.resources = permission.resources || [];

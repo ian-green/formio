@@ -372,7 +372,7 @@ module.exports = (router, resourceName, resourceId) => {
           component.hasOwnProperty('persistent') &&
           !component.persistent
         ) {
-          util.deleteProp('data.' + path)(req.body);
+          util.deleteProp(`data.${  path}`)(req.body);
         }
 
         executeFieldHandler(component, path, validation, req.handlerName, req, res, cb);
@@ -398,7 +398,7 @@ module.exports = (router, resourceName, resourceId) => {
     };
 
     // Add before handlers.
-    const before = 'before' + method.method;
+    const before = `before${  method.method}`;
     handlers[before] = (req, res, next) => {
       req.handlerName = before;
       async.series([
@@ -414,7 +414,7 @@ module.exports = (router, resourceName, resourceId) => {
     };
 
     // Add after handlers.
-    const after = 'after' + method.method;
+    const after = `after${  method.method}`;
     handlers[after] = (req, res, next) => {
       req.handlerName = after;
       async.series([

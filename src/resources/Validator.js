@@ -281,7 +281,7 @@ const getRules = (type) => [
         request(requestOptions, (err, response, body) => {
           if (err) {
             return resolve({
-              message: 'Select validation error: ' + err,
+              message: `Select validation error: ${  err}`,
               path: state.path,
               type: 'any.select'
             });
@@ -289,7 +289,7 @@ const getRules = (type) => [
 
           if (response && parseInt(response.statusCode / 100, 10) !== 2) {
             return resolve({
-              message: 'Select validation error: ' + body,
+              message: `Select validation error: ${  body}`,
               path: state.path,
               type: 'any.select'
             });
@@ -297,7 +297,7 @@ const getRules = (type) => [
 
           if (!body || !body.length) {
             return resolve({
-              message: '"' + value + '" for "' + (component.label || component.key) + '" is not a valid selection.',
+              message: `"${  value  }" for "${  component.label || component.key  }" is not a valid selection.`,
               path: state.path,
               type: 'any.select'
             });
@@ -325,7 +325,7 @@ const getRules = (type) => [
       const model = params.model;
       const async = params.async;
 
-      const path = 'data.' + state.path.join('.');
+      const path = `data.${  state.path.join('.')}`;
 
       // Allow empty.
       if (!value) {
@@ -346,7 +346,7 @@ const getRules = (type) => [
         value.hasOwnProperty('address_components') &&
         value.hasOwnProperty('place_id')
       ) {
-        query[path + '.place_id'] = {$regex: new RegExp(`^${util.escapeRegExp(value.place_id)}$`), $options: 'i'};
+        query[`${path  }.place_id`] = {$regex: new RegExp(`^${util.escapeRegExp(value.place_id)}$`), $options: 'i'};
       }
       // Compare the contents of arrays vs the order.
       else if (_.isArray(value)) {
@@ -513,7 +513,7 @@ class Validator {
       switch (component.type) {
         case 'form': {
           // Ensure each sub submission at least has an empty object or it won't validate.
-          _.update(componentData, component.key + '.data', value => value ? value : {});
+          _.update(componentData, `${component.key  }.data`, value => value ? value : {});
 
           const subSubmission = _.get(componentData, component.key, {});
 

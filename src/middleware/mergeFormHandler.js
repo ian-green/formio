@@ -47,10 +47,10 @@ module.exports = function(router) {
       // Make the key unique by iterating it.
       while (_.has(exhausted, key) && exhausted[key] !== current.type) {
         if (!key.match(suffixRegex)) {
-          return key + '2';
+          return `${key  }2`;
         }
 
-        return key.replace(suffixRegex, function(suffix) {
+        return key.replace(suffixRegex, (suffix) => {
           return Number(suffix) + 1;
         });
       }
@@ -83,7 +83,7 @@ module.exports = function(router) {
      */
     const addChildKeysToList = function(component, list, children) {
       const container = children || getComponentsName(component);
-      util.eachComponent(_.get(component, container), function(child) {
+      util.eachComponent(_.get(component, container), (child) => {
         if (!list.includes(child)) {
           list.push(child.key);
         }
@@ -253,7 +253,7 @@ module.exports = function(router) {
       };
 
       // Traverse all the components in form a for merging.
-      util.eachComponent(formA, function(a, pathA) {
+      util.eachComponent(formA, (a, pathA) => {
         debug('pathA: ', pathA);
 
         // Skip components which have been inserted already.
@@ -274,7 +274,7 @@ module.exports = function(router) {
 
         // Traverse all the components in form b for merging.
         let skip = false;
-        util.eachComponent(formB, function(b, pathB) {
+        util.eachComponent(formB, (b, pathB) => {
           debug('pathB: ', pathB);
 
           if (skip || listKeys.includes(b.key)) {
@@ -297,7 +297,7 @@ module.exports = function(router) {
       }, true);
 
       // Sweep formB one last time for any remaining components.
-      util.eachComponent(formB, function(b) {
+      util.eachComponent(formB, (b) => {
         if (listKeys.includes(b.key)) {
           return;
         }
@@ -308,7 +308,7 @@ module.exports = function(router) {
       return list;
     };
 
-    cache.loadCurrentForm(req, function(err, form) {
+    cache.loadCurrentForm(req, (err, form) => {
       if (err || !form) {
         const msg = err || 'No form was contained in the current request.';
         debug(msg);
@@ -339,9 +339,9 @@ module.exports = function(router) {
       const local = _.cloneDeep(req.body.components);
       const componentMap = {stable: {}, local: {}};
       const keyMap = {};
-      ['stable', 'local'].forEach(function(type) {
+      ['stable', 'local'].forEach((type) => {
         const components = (type === 'stable') ? stable : local;
-        util.eachComponent(components, function(component) {
+        util.eachComponent(components, (component) => {
           // Force each component to be unique, with stable taking precedence.
           if (type === 'local') {
             component.key = uniquifyKey(keyMap, component);

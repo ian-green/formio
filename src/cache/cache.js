@@ -81,7 +81,7 @@ module.exports = function(router) {
 
       router.formio.resources.form.model.findOne(
         hook.alter('formQuery', query, req),
-        function(err, result) {
+        (err, result) => {
           if (err) {
             debug.loadForm(err);
             return cb(err);
@@ -95,7 +95,7 @@ module.exports = function(router) {
           this.updateCache(req, cache, result);
           debug.loadForm('Caching result');
           cb(null, result);
-        }.bind(this)
+        }
       );
     },
 
@@ -147,7 +147,7 @@ module.exports = function(router) {
     loadSubmission(req, formId, subId, cb) {
       const cache = this.cache(req);
       if (cache.submissions[subId]) {
-        debug.loadSubmission('Cache hit: ' + subId);
+        debug.loadSubmission(`Cache hit: ${  subId}`);
         return cb(null, cache.submissions[subId]);
       }
 
@@ -161,12 +161,12 @@ module.exports = function(router) {
         return cb('Invalid form _id given.');
       }
 
-      debug.loadSubmission('Searching for form: ' + formId + ', and submission: ' + subId);
+      debug.loadSubmission(`Searching for form: ${  formId  }, and submission: ${  subId}`);
       const query = {_id: subId, form: formId, deleted: {$eq: null}};
       debug.loadSubmission(query);
       const submissionModel = req.submissionModel || router.formio.resources.submission.model;
       submissionModel.findOne(query)
-        .exec(function(err, submission) {
+        .exec((err, submission) => {
           if (err) {
             debug.loadSubmission(err);
             return cb(err);
@@ -211,7 +211,7 @@ module.exports = function(router) {
     loadFormByName(req, name, cb) {
       const cache = this.cache(req);
       if (cache.names[name]) {
-        debug.loadFormByName('Cache hit: ' + name);
+        debug.loadFormByName(`Cache hit: ${  name}`);
         this.loadForm(req, 'resource', cache.names[name], cb);
       }
       else {
@@ -220,7 +220,7 @@ module.exports = function(router) {
           deleted: {$eq: null}
         }, req);
 
-        router.formio.resources.form.model.findOne(query).exec(function(err, result) {
+        router.formio.resources.form.model.findOne(query).exec((err, result) => {
           if (err) {
             debug.loadFormByName(err);
             return cb(err);
@@ -232,7 +232,7 @@ module.exports = function(router) {
           result = result.toObject();
           this.updateCache(req, cache, result);
           cb(null, result);
-        }.bind(this));
+        });
       }
     },
 
@@ -242,7 +242,7 @@ module.exports = function(router) {
     loadFormByAlias(req, alias, cb) {
       const cache = this.cache(req);
       if (cache.aliases[alias]) {
-        debug.loadFormByAlias('Cache hit: ' + alias);
+        debug.loadFormByAlias(`Cache hit: ${  alias}`);
         this.loadForm(req, 'resource', cache.aliases[alias], cb);
       }
       else {
@@ -251,7 +251,7 @@ module.exports = function(router) {
           deleted: {$eq: null}
         }, req);
 
-        router.formio.resources.form.model.findOne(query).exec(function(err, result) {
+        router.formio.resources.form.model.findOne(query).exec((err, result) => {
           if (err) {
             debug.loadFormByAlias(err);
             return cb(err);
@@ -263,7 +263,7 @@ module.exports = function(router) {
           result = result.toObject();
           this.updateCache(req, cache, result);
           cb(null, result);
-        }.bind(this));
+        });
       }
     },
 
@@ -286,7 +286,7 @@ module.exports = function(router) {
 
       // Get all of the form components.
       const comps = [];
-      util.eachComponent(form.components, function(component) {
+      util.eachComponent(form.components, (component) => {
         if (component.type === 'form') {
           comps.push(component);
         }

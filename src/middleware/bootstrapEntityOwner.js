@@ -16,7 +16,7 @@ module.exports = function(router) {
     return function bootstrapEntityOwnerMiddleware(req, res, next) {
       // Set the flag for self ownership if present.
       req.selfOwner = selfOwner || false;
-      debug('selfOwner: ' + req.selfOwner);
+      debug(`selfOwner: ${  req.selfOwner}`);
 
       // Util to determine if we have a token to default access.
       const tokenPresent = (_.has(req, 'token') && !_.isNull(req.token) && _.has(req, 'token.user._id'));
@@ -34,32 +34,32 @@ module.exports = function(router) {
 
       // If req.assignOwner was set by the permissionHandler middleware, allow the request to contain the owner.
       if (_.has(req, 'assignOwner') && req.assignOwner) {
-        debug('assignOwner: ' + req.assignOwner + ', owner: ' + _.get(req, 'body.owner'));
+        debug(`assignOwner: ${  req.assignOwner  }, owner: ${  _.get(req, 'body.owner')}`);
         return next();
       }
       else if (isPost) {
         // Allow an admin to manually override the owner property.
         if (hasOwner && _.has(req, 'isAdmin') && req.isAdmin) {
-          debug('Owner override by Admin, owner: ' + _.get(req, 'body.owner'));
+          debug(`Owner override by Admin, owner: ${  _.get(req, 'body.owner')}`);
           return next();
         }
 
         else if (hasOwner && req.ownerAssign) {
-          debug('Owner override with create_all access, owner: ' + _.get(req, 'body.owner'));
+          debug(`Owner override with create_all access, owner: ${  _.get(req, 'body.owner')}`);
           return next();
         }
 
         // If the token is present, and the user is not being modified by an admin, default to the token user.
         else if (tokenPresent) {
           _.set(req, 'body.owner', _.get(req, 'token.user._id'));
-          debug('No owner set, default owner: ' + _.get(req, 'body.owner'));
+          debug(`No owner set, default owner: ${  _.get(req, 'body.owner')}`);
           return next();
         }
       }
       else if (isPut) {
         // Allow an admin to manually override the owner property.
         if (hasOwner && _.has(req, 'isAdmin') && req.isAdmin) {
-          debug('Owner override by Admin, owner: ' + _.get(req, 'body.owner'));
+          debug(`Owner override by Admin, owner: ${  _.get(req, 'body.owner')}`);
           return next();
         }
 

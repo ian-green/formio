@@ -14,30 +14,24 @@ module.exports = (worker, done) => {
     autoescape: false
   });
 
-  environment.addFilter('is_string', function(obj) {
-    return _.isString(obj);
-  });
+  environment.addFilter('is_string', _.isString);
 
-  environment.addFilter('is_array', function(obj) {
-    return _.isArray(obj);
-  });
+  environment.addFilter('is_array', _.isArray);
 
-  environment.addFilter('is_object', function(obj) {
-    return _.isPlainObject(obj);
-  });
+  environment.addFilter('is_object', _.isPlainObject);
 
   environment.addFilter('date', dateFilter);
 
-  environment.addFilter('submissionTable', function(obj, components) {
+  environment.addFilter('submissionTable', (obj, components) => {
     return new nunjucks.runtime.SafeString(util.renderFormSubmission(obj, components));
   });
 
-  environment.addFilter('componentValue', function(obj, key, components) {
+  environment.addFilter('componentValue', (obj, key, components) => {
     const compValue = util.renderComponentValue(obj, key, components);
     return new nunjucks.runtime.SafeString(compValue.value);
   });
 
-  environment.addFilter('componentLabel', function(key, components) {
+  environment.addFilter('componentLabel', (key, components) => {
     let label = key;
     if (!components.hasOwnProperty(key)) {
       return label;

@@ -20,7 +20,7 @@ module.exports = function(options) {
     input: require('fs').createReadStream('logo.txt')
   });
 
-  rl.on('line', function(line) {
+  rl.on('line', (line) => {
     util.log(
       line.substring(0,4) +
       line.substring(4, 30).cyan.bold +
@@ -30,7 +30,7 @@ module.exports = function(options) {
     );
   });
 
-  rl.on('close', function() {
+  rl.on('close', () => {
     // Print the welcome screen.
     util.log('');
     util.log(fs.readFileSync('welcome.txt').toString().green);
@@ -49,24 +49,24 @@ module.exports = function(options) {
   });
 
   // Mount the client application.
-  app.use('/', express.static(__dirname + '/client/dist'));
+  app.use('/', express.static(`${__dirname  }/client/dist`));
 
   // Load the form.io server.
   var server = options.server || require('./index')(config);
   var hooks = options.hooks || {};
 
   app.use(server.formio.middleware.restrictRequestTypes);
-  server.init(hooks).then(function(formio) {
+  server.init(hooks).then((formio) => {
     // Called when we are ready to start the server.
     var start = function() {
       // Start the application.
       if (fs.existsSync('app')) {
         var application = express();
-        application.use('/', express.static(__dirname + '/app/dist'));
+        application.use('/', express.static(`${__dirname  }/app/dist`));
         config.appPort = config.appPort || 8080;
         application.listen(config.appPort);
-        var appHost = 'http://localhost:' + config.appPort;
-        util.log(' > Serving application at ' + appHost.green);
+        var appHost = `http://localhost:${  config.appPort}`;
+        util.log(` > Serving application at ${  appHost.green}`);
       }
 
       // Mount the Form.io API platform.
@@ -97,7 +97,7 @@ module.exports = function(options) {
     }
 
     // See if they have any forms available.
-    formio.db.collection('forms').count(function(err, numForms) {
+    formio.db.collection('forms').count((err, numForms) => {
       // If there are forms, then go ahead and start the server.
       if ((!err && numForms > 0) || test) {
         if (!install.download && !install.extract) {
@@ -110,7 +110,7 @@ module.exports = function(options) {
       install.user = true;
 
       // Install.
-      require('./install')(formio, install, function(err) {
+      require('./install')(formio, install, (err) => {
         if (err) {
           return util.log(err.message);
         }

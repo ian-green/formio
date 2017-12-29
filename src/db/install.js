@@ -15,7 +15,7 @@ module.exports = function(db, config, next) {
   async.parallel([
     function(cb) {
       // Create actions collections exist.
-      db.createCollection('actions', null, function(err, collection) {
+      db.createCollection('actions', null, (err, collection) => {
         if (err) {
           return cb(err);
         }
@@ -32,7 +32,7 @@ module.exports = function(db, config, next) {
     },
     function(cb) {
       // Create projects collections exist.
-      db.createCollection('projects', null, function(err, collection) {
+      db.createCollection('projects', null, (err, collection) => {
         if (err) {
           return cb(err);
         }
@@ -61,7 +61,7 @@ module.exports = function(db, config, next) {
     },
     function(cb) {
       // Create forms collections exist.
-      db.createCollection('forms', null, function(err, collection) {
+      db.createCollection('forms', null, (err, collection) => {
         if (err) {
           return cb(err);
         }
@@ -114,7 +114,7 @@ module.exports = function(db, config, next) {
     },
     function(cb) {
       // Create roles collections exist.
-      db.createCollection('roles', null, function(err, collection) {
+      db.createCollection('roles', null, (err, collection) => {
         if (err) {
           return cb(err);
         }
@@ -131,7 +131,7 @@ module.exports = function(db, config, next) {
     },
     function(cb) {
       // Create schema collections exist.
-      db.createCollection('schema', null, function(err, collection) {
+      db.createCollection('schema', null, (err, collection) => {
         if (err) {
           return cb(err);
         }
@@ -143,7 +143,7 @@ module.exports = function(db, config, next) {
             },
             name: 'key_1'
           }
-        ], function(err, result) {
+        ], (err, result) => {
           if (err) {
             return cb(err);
           }
@@ -154,7 +154,7 @@ module.exports = function(db, config, next) {
     },
     function(cb) {
       // Create submissions collections exist.
-      db.createCollection('submissions', null, function(err, collection) {
+      db.createCollection('submissions', null, (err, collection) => {
         if (err) {
           return cb(err);
         }

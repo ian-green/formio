@@ -8,11 +8,11 @@ module.exports = function(formio) {
       if (!req.body.data) {
         return next();
       }
-      const value = _.get(req.body, 'data.' + path);
+      const value = _.get(req.body, `data.${  path}`);
 
       // Coerse the value into an empty string.
       if (!value && value !== '') {
-        _.set(req.body, 'data.' + path, '');
+        _.set(req.body, `data.${  path}`, '');
       }
       return next();
     },
@@ -23,19 +23,19 @@ module.exports = function(formio) {
 
       // Ensure that signatures are not ever wiped out with a PUT request
       // of data that came from the index request (where the signature is not populated).
-      let value = _.get(req.body, 'data.' + path);
+      let value = _.get(req.body, `data.${  path}`);
 
       // Coerse the value into an empty string.
       if (!value && (value !== '')) {
         value = '';
-        _.set(req.body, 'data.' + path, '');
+        _.set(req.body, `data.${  path}`, '');
       }
 
       if (
         !_.isString(value) ||
         ((value !== '') && (value.substr(0, 5) !== 'data:'))
       ) {
-        formio.cache.loadCurrentSubmission(req, function cacheResults(err, submission) {
+        formio.cache.loadCurrentSubmission(req, (err, submission) => {
           if (err) {
             return next(err);
           }
@@ -43,7 +43,7 @@ module.exports = function(formio) {
             return next(new Error('No submission found.'));
           }
 
-          _.set(req.body, 'data.' + path, _.get(submission.data, path));
+          _.set(req.body, `data.${  path}`, _.get(submission.data, path));
           next();
         });
       }

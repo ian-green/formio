@@ -26,7 +26,7 @@ const CSVExporter = function(form, req, res) {
 
   const ignore = ['password', 'button', 'container', 'datagrid'];
   try {
-    util.eachComponent(form.components, function(component, path) {
+    util.eachComponent(form.components, (component, path) => {
       if (!component.input || !component.key || ignore.includes(component.type)) {
         return;
       }
@@ -49,7 +49,7 @@ const CSVExporter = function(form, req, res) {
         });
       }
       else if (component.type === 'selectboxes') {
-        _.each(component.values, function(option) {
+        _.each(component.values, (option) => {
           items.push({label: [path, option.value].join('.'), path: option.value, type: 'boolean'});
         });
       }
@@ -57,7 +57,7 @@ const CSVExporter = function(form, req, res) {
         items.push({type: 'boolean'});
       }
       else if (component.type === 'survey') {
-        _.each(component.questions, function(question) {
+        _.each(component.questions, (question) => {
           items.push({label: [path, question.value].join('.'), path: question.value});
         });
       }
@@ -88,7 +88,7 @@ const CSVExporter = function(form, req, res) {
             if (component.multiple) {
               if (component.type === 'resource') {
                 const tempVal = [];
-                _.each(value, function(eachItem) {
+                _.each(value, (eachItem) => {
                   tempVal.push(templateExtractor(eachItem));
                 });
                 return tempVal;
@@ -115,7 +115,7 @@ const CSVExporter = function(form, req, res) {
         items.push({});
       }
 
-      items.forEach(function(item) {
+      items.forEach((item) => {
         const finalItem = {
           component: path,
           path: item.path || component.key,
@@ -135,8 +135,8 @@ const CSVExporter = function(form, req, res) {
         }
 
         this.fields.push(finalItem);
-      }.bind(this));
-    }.bind(this));
+      });
+    });
   }
   catch (err) {
     res.status(500).send(err.message || err);
@@ -153,7 +153,7 @@ CSVExporter.prototype.constructor = CSVExporter;
  */
 CSVExporter.prototype.start = function(deferred) {
   let row = null;
-  this.stringifier.on('readable', function() {
+  this.stringifier.on('readable', () => {
     /* eslint-disable no-cond-assign */
     while (row = this.stringifier.read()) {
       this.res.write(row.toString());
@@ -161,10 +161,10 @@ CSVExporter.prototype.start = function(deferred) {
     /* eslint-enable no-cond-assign */
 
     deferred.resolve();
-  }.bind(this));
+  });
 
   const labels = ['ID', 'Created', 'Modified'];
-  this.fields.forEach(function(item) {
+  this.fields.forEach((item) => {
     if (item.hasOwnProperty('rename')) {
       labels.push(item.rename);
       return;
@@ -201,8 +201,8 @@ CSVExporter.prototype.stream = function(stream) {
       data = (column.preprocessor || _.identity)(data);
 
       if (data instanceof Array && data.length > 0) {
-        return data.map(function(item) {
-          return '"' + coerceToString(_.get(item, column.path, item), column) + '"';
+        return data.map((item) => {
+          return `"${  coerceToString(_.get(item, column.path, item), column)  }"`;
         }).join(',');
       }
       if (typeof data === 'string') {
@@ -222,7 +222,7 @@ CSVExporter.prototype.stream = function(stream) {
       return JSON.stringify(data);
     };
 
-    self.fields.forEach(function(column) {
+    self.fields.forEach((column) => {
       const componentData = _.get(submission.data, column.component);
 
       // If the path had no results and the component specifies a path, check for a datagrid component
@@ -246,7 +246,7 @@ CSVExporter.prototype.stream = function(stream) {
   };
 
   return stream
-    .pipe(through(write, function() {
+    .pipe(through(write, () => {
       return self.res.end();
     }))
     .pipe(this.stringifier);

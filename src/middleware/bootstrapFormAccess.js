@@ -33,7 +33,7 @@ module.exports = function(router) {
     // Query the roles collection, to build the updated form access list.
     router.formio.resources.role.model
       .find(hook.alter('roleQuery', {deleted: {$eq: null}}, req))
-      .exec(function(err, roles) {
+      .exec((err, roles) => {
         if (err) {
           debug(err);
           return next(err);
@@ -45,26 +45,26 @@ module.exports = function(router) {
 
         // Convert the roles to ObjectIds before saving.
         debug(roles);
-        roles = _.map(roles, function(role) {
+        roles = _.map(roles, (role) => {
           return ObjectId(role.toObject()._id);
         });
 
         const update = [{type: 'read_all', roles: roles}];
         debug(update);
         router.formio.resources.form.model.findOne({_id: res.resource.item._id, deleted: {$eq: null}})
-          .exec(function(err, form) {
+          .exec((err, form) => {
             if (err) {
               debug(err);
               return next(err);
             }
             if (!form) {
-              debug('No form found with _id: ' + res.resource.item._id);
+              debug(`No form found with _id: ${  res.resource.item._id}`);
               return next();
             }
 
             // Update the actual form in mongo to reflect the access changes.
             form.access = update;
-            form.save(function(err, form) {
+            form.save((err, form) => {
               if (err) {
                 debug(err);
                 return next(err);

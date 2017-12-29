@@ -27,7 +27,7 @@ module.exports = function(router) {
       const badCharacters = /^[^A-Za-z_]+|[^A-Za-z0-9\-\._]+/g;
       /* eslint-enable no-useless-escape */
       let error = false;
-      formio.util.eachComponent(req.body.components, function(component) {
+      formio.util.eachComponent(req.body.components, (component) => {
         // Remove all unsupported characters from api keys.
         if (component.hasOwnProperty('key')) {
           component.key = component.key.replace(badCharacters, '');

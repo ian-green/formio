@@ -128,7 +128,7 @@ module.exports = function(router) {
      * @type {function(this:SaveSubmission)}
      */
     const loadResource = function(cache, then) {
-      router.formio.cache.loadForm(req, 'resource', this.settings.resource, function(err, resource) {
+      router.formio.cache.loadForm(req, 'resource', this.settings.resource, (err, resource) => {
         if (err) {
           return then(err);
         }
@@ -195,7 +195,7 @@ module.exports = function(router) {
       submission.data = submission.data || {};
 
       // Iterate over all the available fields.
-      _.each(this.settings.fields, function(field, key) {
+      _.each(this.settings.fields, (field, key) => {
         if (req.body.data.hasOwnProperty(field)) {
           submission.data[key] = req.body.data[field];
         }
@@ -228,7 +228,7 @@ module.exports = function(router) {
         req,
         req.body.form,
         req.body._id,
-        function(err, currentSubmission) {
+        (err, currentSubmission) => {
           if (err) {
             return then(err);
           }
@@ -244,7 +244,7 @@ module.exports = function(router) {
             req,
             this.settings.resource,
             external.id,
-            function(err, submission) {
+            (err, submission) => {
               if (err) {
                 return then();
               }
@@ -253,7 +253,7 @@ module.exports = function(router) {
               then();
             }
           );
-        }.bind(this));
+        });
     }.bind(this);
 
     // Skip this resource.
@@ -261,7 +261,7 @@ module.exports = function(router) {
     async.series([
       async.apply(loadResource, cache),
       async.apply(loadSubmission, cache)
-    ], function(err) {
+    ], (err) => {
       if (err) {
         return next(err);
       }
@@ -275,7 +275,7 @@ module.exports = function(router) {
         updateOwner,
         assignResource
       ], next);
-    }.bind(this));
+    });
   };
 
   // Return the SaveSubmission.

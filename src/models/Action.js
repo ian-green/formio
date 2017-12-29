@@ -85,11 +85,11 @@ module.exports = function(formio) {
         }
 
         if (!form) {
-          hook.alter('actionMachineName', document.form + ':' + document.name, document, done);
+          hook.alter('actionMachineName', `${document.form  }:${  document.name}`, document, done);
           return;
         }
 
-        hook.alter('actionMachineName', form.name + ':' + document.name, document, done);
+        hook.alter('actionMachineName', `${form.name  }:${  document.name}`, document, done);
       });
   };
 

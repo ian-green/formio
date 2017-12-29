@@ -12,7 +12,7 @@ module.exports = router => {
       return next();
     }
 
-    const subSubmission = _.get(req.body, 'data.' + path, {});
+    const subSubmission = _.get(req.body, `data.${  path}`, {});
 
     // if submission has an _id, don't submit. Should be submitted from the frontend.
     if (subSubmission._id) {
@@ -29,7 +29,7 @@ module.exports = router => {
               if (err.details && err.details.length) {
                 _.each(err.details, (details) => {
                   if (details.path) {
-                    details.path = path + '.data.' + details.path;
+                    details.path = `${path  }.data.${  details.path}`;
                   }
                 });
               }
@@ -45,13 +45,13 @@ module.exports = router => {
     }
     childReq.body = subSubmission;
     childReq.params.formId = component.form;
-    router.resourcejs[url].post(childReq, childRes, function(err) {
+    router.resourcejs[url].post(childReq, childRes, (err) => {
       if (err) {
         return next(err);
       }
 
       if (childRes.resource && childRes.resource.item) {
-        _.set(req.body, 'data.' + path, childRes.resource.item);
+        _.set(req.body, `data.${  path}`, childRes.resource.item);
       }
       next();
     });
@@ -70,7 +70,7 @@ module.exports = router => {
         const submissionModel = req.submissionModel || router.formio.resources.submission.model;
         submissionModel.findOne(
           {_id: compValue._id, deleted: {$eq: null}}
-        ).exec(function(err, submission) {
+        ).exec((err, submission) => {
           if (err) {
             return router.formio.util.log(err);
           }
@@ -78,7 +78,7 @@ module.exports = router => {
           // Update the submission's externalIds.
           let found = false;
           submission.externalIds = submission.externalIds || [];
-          _.each(submission.externalIds, function(externalId) {
+          _.each(submission.externalIds, (externalId) => {
             if (externalId.type === 'parent') {
               found = true;
             }
@@ -88,7 +88,7 @@ module.exports = router => {
               type: 'parent',
               id: res.resource.item._id
             });
-            submission.save(function(err, submission) {
+            submission.save((err, submission) => {
               if (err) {
                 return router.formio.util.log(err);
               }

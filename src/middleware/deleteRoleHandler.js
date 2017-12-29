@@ -35,9 +35,9 @@ module.exports = function(router) {
     }
 
     // Load the role in question.
-    router.formio.resources.role.model.findById(roleId).exec(function(err, role) {
+    router.formio.resources.role.model.findById(roleId).exec((err, role) => {
       if (err || !role) {
-        debug(err || 'No Role found with roleId: ' + roleId);
+        debug(err || `No Role found with roleId: ${  roleId}`);
         return res.status(404).send('Unknown Role.');
       }
       role = role.toObject();
@@ -48,13 +48,13 @@ module.exports = function(router) {
         return res.sendStatus(405);
       }
 
-      prune.role(role._id, req, function(err) {
+      prune.role(role._id, req, (err) => {
         if (err) {
           debug(err);
           return next(err);
         }
 
-        debug('Deleted role w/ _id: ' + role._id);
+        debug(`Deleted role w/ _id: ${  role._id}`);
         res.sendStatus(200);
       });
     });

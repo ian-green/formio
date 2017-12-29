@@ -33,7 +33,7 @@ module.exports = (router) => (req, res, next) => {
 
   const user = req.user._id;
   const search = [util.idToString(user), util.idToBson(user)];
-  hook.alter('resourceAccessFilter', search, req, function(err, search) {
+  hook.alter('resourceAccessFilter', search, req, (err, search) => {
     // Try to recover if the hook fails.
     if (err) {
       debug(err);
@@ -61,5 +61,5 @@ module.exports = (router) => (req, res, next) => {
     req.countQuery = req.countQuery.find(query);
 
     next();
-  }.bind(this));
+  });
 };

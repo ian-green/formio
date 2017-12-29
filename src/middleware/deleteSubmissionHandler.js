@@ -18,7 +18,7 @@ module.exports = function(router) {
       return next();
     }
 
-    prune.submission(req.subId, null, req, function(err, submission) {
+    prune.submission(req.subId, null, req, (err, submission) => {
       if (err) {
         debug(err);
         return next(err);

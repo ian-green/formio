@@ -59,7 +59,7 @@ module.exports = function(router) {
 
     let isAllowed = false;
     const allowed = decoded.allow.split(',');
-    _.each(allowed, function(allow) {
+    _.each(allowed, (allow) => {
       const parts = allow.split(':');
       if (parts.length < 2) {
         return;
@@ -150,7 +150,7 @@ module.exports = function(router) {
     expire = parseInt(expire, 10);
 
     // get a temporary token.
-    getTempToken(req, res, allow, expire, function(err, tempToken) {
+    getTempToken(req, res, allow, expire, (err, tempToken) => {
       if (err) {
         return res.status(400).send(err);
       }
@@ -205,11 +205,11 @@ module.exports = function(router) {
     }
 
     // Look for the user.
-    query['data.' + userField] = {$regex: new RegExp('^' + util.escapeRegExp(username) + '$'), $options: 'i'};
+    query[`data.${  userField}`] = {$regex: new RegExp(`^${  util.escapeRegExp(username)  }$`), $options: 'i'};
 
     // Find the user object.
     const submissionModel = req.submissionModel || router.formio.resources.submission.model;
-    submissionModel.findOne(query, function(err, user) {
+    submissionModel.findOne(query, (err, user) => {
       if (err) {
         return next(err);
       }
@@ -223,7 +223,7 @@ module.exports = function(router) {
       }
 
       // Compare the provided password.
-      bcrypt.compare(password, _.get(user.data, passField), function(err, value) {
+      bcrypt.compare(password, _.get(user.data, passField), (err, value) => {
         if (err) {
           return next(err);
         }
@@ -235,7 +235,7 @@ module.exports = function(router) {
         router.formio.resources.form.model.findOne({
           _id: user.form,
           deleted: {$eq: null}
-        }, function(err, form) {
+        }, (err, form) => {
           if (err) {
             return next(err);
           }
@@ -246,7 +246,7 @@ module.exports = function(router) {
           form = form.toObject();
 
           // Allow anyone to hook and modify the user.
-          hook.alter('user', user, function hookUserCallback(err, _user) {
+          hook.alter('user', user, (err, _user) => {
             if (err) {
               // Attempt to fail safely and not update the user reference.
               debug.authenticate(err);
