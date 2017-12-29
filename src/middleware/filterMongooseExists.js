@@ -13,7 +13,7 @@ const debug = require('debug')('formio:middleware:filterMongooseExists');
  *
  * @returns {Function}
  */
-module.exports = (router) => (settings) => (req, res, next) => {
+module.exports = (router) => (settings) => function(req, res, next) {
   // Only filter on non empty objects.
   debug(settings);
   if (!settings || !_.isObject(settings) || settings === {}) {

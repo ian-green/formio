@@ -5,7 +5,7 @@ const Threads = require('threads');
 const config = Threads.config;
 const Spawn = Threads.spawn;
 const debug = require('debug')('formio:worker:thread');
-const _ = require('_');
+const _ = require('lodash');
 
 config.set({
   basepath: {
