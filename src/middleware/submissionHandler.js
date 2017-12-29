@@ -60,8 +60,8 @@ module.exports = (router, resourceName, resourceId) => {
               res.resource &&
               res.resource.item
             ) {
-              let formId = component.form || component.resource;
-              let compValue = _.get(res.resource.item.data, path);
+              const formId = component.form || component.resource;
+              const compValue = _.get(res.resource.item.data, path);
               if (compValue && compValue._id) {
                 const submissionModel = req.submissionModel || router.formio.resources.submission.model;
 
@@ -89,10 +89,10 @@ module.exports = (router, resourceName, resourceId) => {
               }
             }
             else if ((handlerName === 'afterIndex') && res.resource && res.resource.item) {
-              let formId = component.form || component.resource;
-              let resources = [];
+              const formId = component.form || component.resource;
+              const resources = [];
               _.each(res.resource.item, (resource) => {
-                let compValue = _.get(resource.data, path);
+                const compValue = _.get(resource.data, path);
                 if (compValue && compValue._id) {
                   resources.push(util.idToBson(compValue._id.toString()));
                 }
@@ -118,9 +118,9 @@ module.exports = (router, resourceName, resourceId) => {
                 }))
                 .then((submissions) => {
                   _.each(res.resource.item, (resource) => {
-                    let compValue = _.get(resource.data, path);
+                    const compValue = _.get(resource.data, path);
                     if (compValue && compValue._id) {
-                      let submission = _.find(submissions, (sub) => {
+                      const submission = _.find(submissions, (sub) => {
                         return sub._id.toString() === compValue._id.toString();
                       });
                       if (submission) {
@@ -131,22 +131,22 @@ module.exports = (router, resourceName, resourceId) => {
                 });
             }
             else if (
-              ((handlerName === 'afterPost') || (handlerName === 'afterPut')) &&
+              (['afterPost', 'afterPut'].includes(handlerName)) &&
               res.resource &&
               res.resource.item &&
               req.resources
             ) {
               // Make sure to reset the value on the return result.
-              let compValue = _.get(res.resource.item.data, path);
+              const compValue = _.get(res.resource.item.data, path);
               if (compValue && req.resources.hasOwnProperty(compValue._id)) {
                 _.set(res.resource.item.data, path, req.resources[compValue._id]);
               }
             }
             else if (
-              ((handlerName === 'beforePost') || (handlerName === 'beforePut')) &&
+              (['beforePost', 'beforePut'].includes(handlerName)) &&
               req.body
             ) {
-              let compValue = _.get(req.body.data, path);
+              const compValue = _.get(req.body.data, path);
               if (compValue && compValue._id && compValue.hasOwnProperty('data')) {
                 if (!req.resources) {
                   req.resources = {};
