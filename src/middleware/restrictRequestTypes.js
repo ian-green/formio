@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('formio:middleware:restrictRequestTypes');
+const debug = require('debug')('formio:middleware:restrictRequestTypes');
 
 module.exports = function(router) {
   /**

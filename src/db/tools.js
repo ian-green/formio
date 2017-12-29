@@ -42,8 +42,8 @@ module.exports = (db, schema) => {
         return undefined;
       }
 
-      var cipher = crypto.createCipher('aes-256-cbc', secret);
-      var decryptedJSON = JSON.stringify(mixed);
+      const cipher = crypto.createCipher('aes-256-cbc', secret);
+      const decryptedJSON = JSON.stringify(mixed);
 
       return Buffer.concat([
         cipher.update(decryptedJSON),
@@ -55,8 +55,8 @@ module.exports = (db, schema) => {
         return undefined;
       }
 
-      var decipher = crypto.createDecipher('aes-256-cbc', secret);
-      var decryptedJSON = Buffer.concat([
+      const decipher = crypto.createDecipher('aes-256-cbc', secret);
+      const decryptedJSON = Buffer.concat([
         decipher.update(cipherbuffer), // Buffer contains encrypted utf8
         decipher.final()
       ]);

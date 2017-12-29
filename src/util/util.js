@@ -395,7 +395,7 @@ const Utils = {
         else if (component.hasOwnProperty('data') && component.data.values) {
           values = component.data.values;
         }
-        for (let i in values) {
+        for (const i in values) {
           const subCompValue = values[i];
           if (subCompValue.value === value) {
             compValue.value = subCompValue.label;
@@ -406,7 +406,7 @@ const Utils = {
       }
       case 'selectboxes': {
         const selectedValues = [];
-        for (let i in component.values) {
+        for (const i in component.values) {
           const selectBoxValue = component.values[i];
           if (value[selectBoxValue.value]) {
             selectedValues.push(selectBoxValue.label);

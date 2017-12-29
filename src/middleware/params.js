@@ -1,27 +1,27 @@
 'use strict';
 
-var util = require('../util/util');
-var _ = require('lodash');
-var debug = require('debug')('formio:request');
+const util = require('../util/util');
+const _ = require('lodash');
+const debug = require('debug')('formio:request');
 
 module.exports = function(router) {
-  var hook = require('../util/hook')(router.formio);
+  const hook = require('../util/hook')(router.formio);
   return function paramsHandler(req, res, next) {
     // Split the request url into its corresponding parameters.
-    var params = _.assign(util.getUrlParams(req.url), util.getUrlParams(req.baseUrl));
+    const params = _.assign(util.getUrlParams(req.url), util.getUrlParams(req.baseUrl));
 
     // Get the formId from the request url.
-    var formId = params.hasOwnProperty('form') && !_.isUndefined(params.form)
+    const formId = params.hasOwnProperty('form') && !_.isUndefined(params.form)
       ? params.form
       : null;
 
     // Get the formId from the request url.
-    var subId = params.hasOwnProperty('submission') && !_.isUndefined(params.form)
+    let subId = params.hasOwnProperty('submission') && !_.isUndefined(params.form)
       ? params.submission
       : null;
 
     // Get the roleId from the request url.
-    var roleId = params.hasOwnProperty('role') && _.isUndefined(params.role)
+    const roleId = params.hasOwnProperty('role') && _.isUndefined(params.role)
       ? params.role
       : null;
 

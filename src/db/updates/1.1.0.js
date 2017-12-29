@@ -1,7 +1,7 @@
 'use strict';
 
-const async = require('async');
-const crypto = require('crypto');
+let async = require('async');
+let crypto = require('crypto');
 
 /**
  * Encrypt some text
@@ -14,8 +14,8 @@ function encrypt(secret, mixed) {
     return undefined;
   }
 
-  const cipher = crypto.createCipher('aes-256-cbc', secret);
-  const decryptedJSON = JSON.stringify(mixed);
+  let cipher = crypto.createCipher('aes-256-cbc', secret);
+  let decryptedJSON = JSON.stringify(mixed);
 
   return Buffer.concat([
     cipher.update(decryptedJSON),

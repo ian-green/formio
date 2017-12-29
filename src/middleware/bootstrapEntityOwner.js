@@ -1,8 +1,8 @@
 'use strict';
 /*eslint max-statements: 0*/
 
-var debug = require('debug')('formio:middleware:bootstrapEntityOwner');
-var _ = require('lodash');
+const debug = require('debug')('formio:middleware:bootstrapEntityOwner');
+const _ = require('lodash');
 
 /**
  * The Bootstrap Entity Owner middleware.
@@ -19,14 +19,14 @@ module.exports = function(router) {
       debug('selfOwner: ' + req.selfOwner);
 
       // Util to determine if we have a token to default access.
-      var tokenPresent = (_.has(req, 'token') && !_.isNull(req.token) && _.has(req, 'token.user._id'));
+      const tokenPresent = (_.has(req, 'token') && !_.isNull(req.token) && _.has(req, 'token.user._id'));
 
       // See if this request has provided an owner.
-      var hasOwner = _.has(req, 'body.owner');
+      const hasOwner = _.has(req, 'body.owner');
 
       // Confirm we are only modifying PUT/POST requests.
-      var isPut = (req.method === 'PUT');
-      var isPost = (req.method === 'POST');
+      const isPut = (req.method === 'PUT');
+      const isPost = (req.method === 'POST');
       if (!isPut && !isPost) {
         debug('Skipping');
         return next();

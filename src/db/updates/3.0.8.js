@@ -94,7 +94,7 @@ module.exports = function(db, config, tools, done) {
       return resolve();
     });
   });
-  
+
   Promise.all([
     roleCreatedIndex,
     roleModifiedIndex,

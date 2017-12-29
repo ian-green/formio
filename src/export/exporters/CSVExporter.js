@@ -1,11 +1,11 @@
 'use strict';
 
-var Exporter = require('../Exporter');
-var util = require('../../util/util');
-var through = require('through');
-var csv = require('csv');
-var _ = require('lodash');
-var Entities = require('html-entities').AllHtmlEntities;
+const Exporter = require('../Exporter');
+const util = require('../../util/util');
+const through = require('through');
+const csv = require('csv');
+const _ = require('lodash');
+const Entities = require('html-entities').AllHtmlEntities;
 
 /**
  * Create a CSV exporter.
@@ -14,7 +14,7 @@ var Entities = require('html-entities').AllHtmlEntities;
  * @param req
  * @constructor
  */
-var CSVExporter = function(form, req, res) {
+const CSVExporter = function(form, req, res) {
   Exporter.call(this, form, req, res);
   this.extension = 'csv';
   this.contentType = 'text/csv';
@@ -24,14 +24,14 @@ var CSVExporter = function(form, req, res) {
   });
   this.fields = [];
 
-  var ignore = ['password', 'button', 'container', 'datagrid'];
+  const ignore = ['password', 'button', 'container', 'datagrid'];
   try {
     util.eachComponent(form.components, function(component, path) {
       if (!component.input || !component.key || ignore.includes(component.type)) {
         return;
       }
 
-      var items = [];
+      const items = [];
 
       // If a component has multiple parts, pick what we want.
       if (component.type === 'address') {
@@ -63,20 +63,20 @@ var CSVExporter = function(form, req, res) {
       }
       else if (['select', 'resource'].includes(component.type)) {
         // Prepare the Lodash template by deleting tags and html entities
-        var clearTemplate = Entities.decode(component.template.replace(/<\/?[^>]+(>|$)/g, ''));
-        var templateExtractor = _.template(clearTemplate, {
+        const clearTemplate = Entities.decode(component.template.replace(/<\/?[^>]+(>|$)/g, ''));
+        const templateExtractor = _.template(clearTemplate, {
           variable: 'item'
         });
 
-        var valuesExtractor = function(value) {
+        const valuesExtractor = function(value) {
           // Check if this is within a datagrid.
           if (_.isArray(value) && value[0] && value[0][component.key]) {
-            let rowValues = [];
+            const rowValues = [];
             _.each(value, (row) => {
               if (!row) {
                 return;
               }
-              let rowValue = row[component.key];
+              const rowValue = row[component.key];
               if (rowValue) {
                 rowValues.push(valuesExtractor(rowValue));
               }
@@ -87,7 +87,7 @@ var CSVExporter = function(form, req, res) {
             //checking if the component can accept multiple values.
             if (component.multiple) {
               if (component.type === 'resource') {
-                var tempVal = [];
+                const tempVal = [];
                 _.each(value, function(eachItem) {
                   tempVal.push(templateExtractor(eachItem));
                 });
@@ -116,7 +116,7 @@ var CSVExporter = function(form, req, res) {
       }
 
       items.forEach(function(item) {
-        var finalItem = {
+        const finalItem = {
           component: path,
           path: item.path || component.key,
           label: item.label || path
@@ -152,7 +152,7 @@ CSVExporter.prototype.constructor = CSVExporter;
  * @param deferred
  */
 CSVExporter.prototype.start = function(deferred) {
-  var row = null;
+  let row = null;
   this.stringifier.on('readable', function() {
     /* eslint-disable no-cond-assign */
     while (row = this.stringifier.read()) {
@@ -163,7 +163,7 @@ CSVExporter.prototype.start = function(deferred) {
     deferred.resolve();
   }.bind(this));
 
-  var labels = ['ID', 'Created', 'Modified'];
+  const labels = ['ID', 'Created', 'Modified'];
   this.fields.forEach(function(item) {
     if (item.hasOwnProperty('rename')) {
       labels.push(item.rename);
@@ -183,9 +183,9 @@ CSVExporter.prototype.start = function(deferred) {
  * @returns {*}
  */
 CSVExporter.prototype.stream = function(stream) {
-  var self = this;
-  var write = function(submission) {
-    var data = [
+  const self = this;
+  const write = function(submission) {
+    const data = [
       submission._id.toString(),
       submission.created.toISOString(),
       submission.modified.toISOString()
@@ -197,7 +197,7 @@ CSVExporter.prototype.stream = function(stream) {
      * @param data
      * @returns {string}
      */
-    var coerceToString = function(data, column) {
+    const coerceToString = function(data, column) {
       data = (column.preprocessor || _.identity)(data);
 
       if (data instanceof Array && data.length > 0) {
@@ -223,12 +223,12 @@ CSVExporter.prototype.stream = function(stream) {
     };
 
     self.fields.forEach(function(column) {
-      var componentData = _.get(submission.data, column.component);
+      const componentData = _.get(submission.data, column.component);
 
       // If the path had no results and the component specifies a path, check for a datagrid component
       if (_.isUndefined(componentData) && column.component.includes('.')) {
-        var parts = column.component.split('.');
-        var container = parts.shift();
+        const parts = column.component.split('.');
+        const container = parts.shift();
         // If the subdata is an array, coerce it to a displayable string.
         if (_.get(submission.data, container) instanceof Array) {
           // Update the column component path, since we removed part of it.

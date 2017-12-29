@@ -1,9 +1,9 @@
 'use strict';
 
-var Exporter = require('../Exporter');
-var JSONStream = require('JSONStream');
+const Exporter = require('../Exporter');
+const JSONStream = require('JSONStream');
 
-var JSONExporter = function(form, req, res) {
+const JSONExporter = function(form, req, res) {
   Exporter.call(this, form, req, res);
   this.extension = 'json';
   this.contentType = 'application/json';

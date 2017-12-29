@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(formio) {
-  var hook = require('../../util/hook')(formio);
+  const hook = require('../../util/hook')(formio);
   return {
     beforePut(component, path, validation, req, res, next) {
       // Only perform before validation has occurred.

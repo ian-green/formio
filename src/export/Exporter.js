@@ -1,8 +1,8 @@
 'use strict';
 
-var Q = require('q');
+const Q = require('q');
 
-var Exporter = function(form, req, res) {
+const Exporter = function(form, req, res) {
   this.extension = '';
   this.contentType = '';
   this.form = form;
@@ -17,7 +17,7 @@ var Exporter = function(form, req, res) {
  *  A promise when the exporter is done initializing.
  */
 Exporter.prototype.init = function() {
-  var deferred = Q.defer();
+  const deferred = Q.defer();
   this.res.setHeader('Content-Disposition', 'attachment; filename=export.' + this.extension);
   this.res.setHeader('Content-Type', this.contentType);
   this.start(deferred);

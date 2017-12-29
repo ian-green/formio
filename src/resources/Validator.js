@@ -64,7 +64,7 @@ const checkConditional = (component, row, data, recurse = false) => {
   }
 
   if (recurse) {
-    let checkParent = checkConditional(component.parent, row, data, true);
+    const checkParent = checkConditional(component.parent, row, data, true);
     return isVisible && (!component.parent || component.parent.type === 'form' || checkParent);
   }
   else {
@@ -511,15 +511,15 @@ class Validator {
       let objectSchema;
       /* eslint-disable max-depth, valid-typeof */
       switch (component.type) {
-        case 'form':
+        case 'form': {
           // Ensure each sub submission at least has an empty object or it won't validate.
           _.update(componentData, component.key + '.data', value => value ? value : {});
 
-          var subSubmission = _.get(componentData, component.key, {});
+          const subSubmission = _.get(componentData, component.key, {});
 
           // If this has already been submitted, then it has been validated.
           if (!subSubmission._id && component.components) {
-            var formSchema = this.buildSchema(
+            const formSchema = this.buildSchema(
               {},
               component.components,
               subSubmission,
@@ -533,6 +533,7 @@ class Validator {
             fieldValidator = JoiX.object();
           }
           break;
+        }
         case 'editgrid':
         case 'datagrid':
           component.multiple = false;
@@ -607,7 +608,7 @@ class Validator {
           if (component.validate) {
             // If the step is provided... we can infer float vs. integer.
             if (component.validate.step && (component.validate.step !== 'any')) {
-              var parts = component.validate.step.split('.');
+              const parts = component.validate.step.split('.');
               if (parts.length === 1) {
                 fieldValidator = fieldValidator.integer();
               }
