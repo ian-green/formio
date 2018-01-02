@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [UNRELEASED]
+### Fixed
+ - CSV export when Select component within DataGrid component.
+ - Do not replace the title and name during import if none are provided.
+ 
+### Added
+ - Custom Form properties.
+
 ## 1.23.7
 ### Changed
  - Allow people to provide their form access settings on POST.

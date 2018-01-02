@@ -6,7 +6,7 @@ const through = require('through');
 const _url = require('url');
 const debug = require('debug')('formio:error');
 
-module.exports = function(router) {
+module.exports = (router) => {
   const hook = require('../util/hook')(router.formio);
 
   // Mount the export endpoint using the url.
@@ -60,7 +60,7 @@ module.exports = function(router) {
       // Initialize the exporter.
       exporter.init()
         .then(() => {
-          const addUrl = function(data) {
+          const addUrl = (data) => {
             _.each(data, (field) => {
               if (field && field._id) {
                 // Add url property for resource fields
