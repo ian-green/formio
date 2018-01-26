@@ -608,12 +608,37 @@ class Validator {
           if (component.validate) {
             // If the step is provided... we can infer float vs. integer.
             if (component.validate.step && (component.validate.step !== 'any')) {
-              const parts = component.validate.step.split('.');
-              if (parts.length === 1) {
-                fieldValidator = fieldValidator.integer();
+              const stepParts = component.validate.step.split('.');
+
+              // If min is also provided this must be factored in
+              if (component.validate.hasOwnProperty('min') &&
+              _.isNumber(component.validate.min)) {
+                const minParts = component.validate.min.split('.');
+
+                // value is integer if both step and min are integer
+                if (minParts.length === 1 && stepParts.length === 1) {
+                  fieldValidator = fieldValidator.integer();
+                }
+                //precision of the value is the greater of step and min
+                else if (minParts.length === 1) {
+                  fieldValidator = fieldValidator.precision(stepParts[1].length);
+                }
+                else if (stepParts.length === 1) {
+                  fieldValidator = fieldValidator.precision(minParts[1].length);
+                }
+                else {
+                  const precision = stepParts[1].length > minParts[1].length ? stepParts[1].length : minParts[1].length;
+
+                  fieldValidator = fieldValidator.precision(precision);
+                }
               }
               else {
-                fieldValidator = fieldValidator.precision(parts[1].length);
+                if (stepParts.length === 1) {
+                  fieldValidator = fieldValidator.integer();
+                }
+                else {
+                  fieldValidator = fieldValidator.precision(stepParts[1].length);
+                }
               }
             }
 
